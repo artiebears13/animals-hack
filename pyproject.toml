@@ -10,7 +10,7 @@ authors = [
     "Timofei Schcudro <t.shshudro@alumni.nsu.ru>",
 ]
 packages = [
-    { include = "semantic/backend", from = "." },
+    { include = "animals/backend", from = "." },
 ]
 readme = "README.md"
 
