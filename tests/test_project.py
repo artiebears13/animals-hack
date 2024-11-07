@@ -1,4 +1,4 @@
-from animals import __version__
+from tests import __version__
 
 
 def test_version():
