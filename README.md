@@ -1,3 +1,5 @@
+![](./data/logo-black.png)
+
 ## Animals Detection Hackaton — Autumn 2024
 
 ---
