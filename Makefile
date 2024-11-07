@@ -1,3 +1,11 @@
+.DEFAULT_GOAL := help
+
+
+HOST ?= 0.0.0.0
+BACKEND_PORT ?= 8000
+FRONTEND_PORT ?= 3000
+
+
 ## Install Python dependencies
 install:
 	@echo "Installing python dependencies..."
