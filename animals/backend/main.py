@@ -1,25 +1,21 @@
+
 import cv2
-import tritonclient.http as httpclient
 import numpy as np
-
-from fastapi import FastAPI
 import torch
-
-from torchvision.transforms import Compose, Lambda
-from torchvision.transforms._transforms_video import (
-    CenterCropVideo,
-    NormalizeVideo,
-)
+import tritonclient.http as httpclient
+from fastapi import FastAPI
 from pytorchvideo.transforms import (
     ApplyTransformToKey,
     ShortSideScale,
     UniformTemporalSubsample,
 )
-from .task_api import check_video_duplicate, VideoLinkRequestBody, VideoLinkResponse
-import requests
-from io import BytesIO
-from pytorchvideo.data.encoded_video import select_video_class
+from torchvision.transforms import Compose, Lambda
+from torchvision.transforms._transforms_video import (
+    CenterCropVideo,
+    NormalizeVideo,
+)
 
+from .task_api import VideoLinkRequestBody, VideoLinkResponse, check_video_duplicate
 
 app = FastAPI()
 
@@ -191,10 +187,10 @@ def send_video_to_triton(video_tensor_short, video_tensor_long, server_url="trit
         video_tensor_short = video_tensor_short.unsqueeze(0)
     video_tensor_short_np = video_tensor_short.cpu().numpy().astype(np.float32)
 
-    input_tensor_short = httpclient.InferInput('input__0', video_tensor_short.shape, "FP32")
+    input_tensor_short = httpclient.InferInput("input__0", video_tensor_short.shape, "FP32")
     input_tensor_short.set_data_from_numpy(video_tensor_short_np)
 
-    input_tensor_long = httpclient.InferInput('input__1', video_tensor_long.shape, "FP32")
+    input_tensor_long = httpclient.InferInput("input__1", video_tensor_long.shape, "FP32")
     input_tensor_long.set_data_from_numpy(video_tensor_long_np)
 
     inputs = [
@@ -203,16 +199,16 @@ def send_video_to_triton(video_tensor_short, video_tensor_long, server_url="trit
     ]
 
     outputs = [
-        httpclient.InferRequestedOutput('output__0')
+        httpclient.InferRequestedOutput("output__0")
     ]
 
     response = triton_client.infer(
-        model_name='video-embedder',
+        model_name="video-embedder",
         inputs=inputs,
         outputs=outputs
     )
 
-    embeddings = response.as_numpy('output__0')
+    embeddings = response.as_numpy("output__0")
 
     return embeddings
 
@@ -220,7 +216,7 @@ def send_video_to_triton(video_tensor_short, video_tensor_long, server_url="trit
 @app.post("/test_request")
 async def test_request():
     # url = 'https://s3.ritm.media/yappy-db-duplicates/16a91af7-f3ac-4517-a051-5240b30f3217.mp4'
-    url = 'https://s3.ritm.media/yappy-db-duplicates/000be48d-c88c-4d48-8b7a-28430ac9b57d.mp4'
+    url = "https://s3.ritm.media/yappy-db-duplicates/000be48d-c88c-4d48-8b7a-28430ac9b57d.mp4"
     video_tensor_short, video_tensor_long = video_url_to_tensor(url=url)
     embeddings = send_video_to_triton(video_tensor_short, video_tensor_long)
     embeddings = embeddings.tolist()

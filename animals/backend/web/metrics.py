@@ -1,5 +1,5 @@
 import time
-from typing import Callable, Awaitable
+from typing import Awaitable, Callable
 
 from prometheus_client import (
     Counter,
@@ -10,7 +10,6 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.routing import Match, Route
 from starlette.types import Scope
-
 
 _DEFAULT_BUCKETS = (
     0.1,
@@ -23,22 +22,22 @@ _DEFAULT_BUCKETS = (
 
 
 REQUESTS_TOTAL = Counter(
-    'requests_total',
-    'Total count of responses by method and path_template.',
-    ('method', 'path_template'),
+    "requests_total",
+    "Total count of responses by method and path_template.",
+    ("method", "path_template"),
 )
 
 REQUESTS_PROCESSING_TIME = Histogram(
-    'requests_processing_time',
-    'Histogram of requests processing time by path_template (in seconds)',
-    ('method', 'path_template'),
+    "requests_processing_time",
+    "Histogram of requests processing time by path_template (in seconds)",
+    ("method", "path_template"),
     buckets=_DEFAULT_BUCKETS,
 )
 
 EXCEPTIONS_TOTAL = Counter(
-    'exceptions_total',
-    'Total count of exceptions raised by path_template and exception type',
-    ('method', 'path_template'),
+    "exceptions_total",
+    "Total count of exceptions raised by path_template and exception type",
+    ("method", "path_template"),
 )
 
 
@@ -78,9 +77,9 @@ async def http_prometheus_middleware(
 
 def _get_path_template(scope: Scope) -> str:
     route: Route
-    for route in scope['app'].routes:
+    for route in scope["app"].routes:
         match, child_scope = route.matches(scope)
         if match == Match.FULL:
             return route.path
 
-    return 'unknown'
+    return "unknown"

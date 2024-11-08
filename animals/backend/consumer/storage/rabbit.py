@@ -1,7 +1,6 @@
 import aio_pika
 from aio_pika.abc import ExchangeType
 from aio_pika.pool import Pool
-
 from consumer.config.settings import settings
 
 

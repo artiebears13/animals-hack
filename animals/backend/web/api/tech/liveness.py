@@ -1,7 +1,8 @@
-from .router import router
 from fastapi.responses import ORJSONResponse
 
+from .router import router
 
-@router.get('/liveness')
+
+@router.get("/liveness")
 def liveness():
-    return ORJSONResponse({'status': 'ok'})
+    return ORJSONResponse({"status": "ok"})

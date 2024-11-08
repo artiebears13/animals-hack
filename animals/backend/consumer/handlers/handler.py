@@ -1,4 +1,3 @@
-import asyncio
 
 from consumer.logger import logger
 from sqlalchemy import select
@@ -9,7 +8,7 @@ async def search_duplicate(message: dict) -> None:
     text = message["body"]
 
     async with async_session() as session:
-        logger.info(f"Start work with queued job")
+        logger.info("Start work with queued job")
         row = await session.execute(select(Jobs).filter_by(uid=message["uid"]))
         job = row.scalar_one()
         session.refresh(job)

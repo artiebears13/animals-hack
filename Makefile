@@ -23,7 +23,12 @@ setup: install activate
 ## Lint code
 lint:
 	@echo "Lint code..."
-	ruff check ./duplicates/backend/ --fix
+	ruff check ./animals/backend/ --fix
+
+## Lint tests
+lint-test:
+	@echo "Lint test code..."
+	ruff check ./tests/ --fix
 
 
 test:

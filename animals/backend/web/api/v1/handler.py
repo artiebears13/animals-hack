@@ -1,42 +1,40 @@
 import contextlib
-
 from typing import Any
 from uuid import uuid4
+
 import msgpack
 import sqlalchemy
+from aio_pika import Message
+from aio_pika.abc import DeliveryMode, ExchangeType
 from fastapi import Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 from starlette_context import context
 from starlette_context.errors import ContextDoesNotExistError
+from web.config.settings import settings
+from web.logger import logger
+from web.storage.db import Jobs, get_db
+from web.storage.rabbit import channel_pool
 
 from .router import router
-from web.storage.db import get_db
-from web.logger import logger
-from web.storage.rabbit import channel_pool
-from aio_pika.abc import DeliveryMode, ExchangeType
-from aio_pika import Message, Channel
-
-from web.config.settings import settings
-from web.storage.db import Jobs
 
 
-@router.post('/upload_image')
+@router.post("/upload_image")
 async def upload_link(session: AsyncSession = Depends(get_db),):
     current_id = str(uuid4())
     db_job = Jobs(uid=current_id, is_processed=False)
     session.add(db_job)
     await session.commit()
 
-    await publish_message({'uid': current_id,
-                           'body': "TEST"
+    await publish_message({"uid": current_id,
+                           "body": "TEST"
                            })
 
-    return JSONResponse({'uid': current_id}, status_code=200)
+    return JSONResponse({"uid": current_id}, status_code=200)
 
 
-@router.post('/get-result')
+@router.post("/get-result")
 async def get_result(body, session: AsyncSession = Depends(get_db),):
     uid = body.uid
 
@@ -58,7 +56,7 @@ async def get_result(body, session: AsyncSession = Depends(get_db),):
 
 
 async def publish_message(body: dict[str, Any]) -> None:
-    logger.info('Sending message: %s', body)
+    logger.info("Sending message: %s", body)
     async with channel_pool.acquire() as channel:  # type: Channel
         exchange = await channel.declare_exchange(
             settings.EXCHANGE,
@@ -67,13 +65,13 @@ async def publish_message(body: dict[str, Any]) -> None:
         )
 
         message_info = {
-            'body': msgpack.packb(body),
-            'delivery_mode': DeliveryMode.PERSISTENT,
+            "body": msgpack.packb(body),
+            "delivery_mode": DeliveryMode.PERSISTENT,
         }
 
         with contextlib.suppress(ContextDoesNotExistError):
-            if correlation_id := context.get('X-Correlation-ID'):
-                message_info['correlation_id'] = correlation_id
+            if correlation_id := context.get("X-Correlation-ID"):
+                message_info["correlation_id"] = correlation_id
 
         await exchange.publish(
             Message(**message_info),

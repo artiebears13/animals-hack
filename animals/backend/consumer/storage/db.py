@@ -1,16 +1,15 @@
 from uuid import uuid4
 
 from asyncpg import Connection
+from consumer.config.settings import settings
 from sqlalchemy import AsyncAdaptedQueuePool
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from typing_extensions import AsyncGenerator
 
-from consumer.config.settings import settings
-
 
 class CConnection(Connection):
     def _get_unique_id(self, prefix: str) -> str:
-        return f'__asyncpg_{prefix}_{uuid4()}__'
+        return f"__asyncpg_{prefix}_{uuid4()}__"
 
 
 def create_engine() -> AsyncEngine:
@@ -21,7 +20,7 @@ def create_engine() -> AsyncEngine:
         pool_size=5,
         max_overflow=10,
         connect_args={
-            'connection_class': CConnection,
+            "connection_class": CConnection,
         },
     )
 

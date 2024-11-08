@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 from starlette.responses import JSONResponse
 from web.api.v2.router import router
 

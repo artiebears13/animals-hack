@@ -1,7 +1,6 @@
 import aio_pika
 from aio_pika.abc import ExchangeType
 from aio_pika.pool import Pool
-
 from web.config.settings import settings
 
 

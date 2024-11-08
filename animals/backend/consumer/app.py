@@ -2,11 +2,9 @@ import asyncio
 import logging.config
 
 import msgpack
-
 from consumer.config.settings import settings
 from consumer.handlers.handler import search_duplicate
-
-from consumer.logger import context_correlation_id, LOGGING_CONFIG, logger
+from consumer.logger import LOGGING_CONFIG, context_correlation_id, logger
 from consumer.storage.rabbit import channel_pool
 
 CALLBACK_MAPPING = {
@@ -19,13 +17,13 @@ CALLBACK_MAPPING = {
 def setup_logger() -> None:
     logging.config.dictConfig(LOGGING_CONFIG)
 
-    if settings.LOG_LEVEL == 'DEBUG':
+    if settings.LOG_LEVEL == "DEBUG":
         logger.setLevel(logging.DEBUG)
 
 
 async def start_consumer():
     setup_logger()
-    logger.info('Starting consumer...')
+    logger.info("Starting consumer...")
 
     async with channel_pool.acquire() as channel:
 
@@ -42,8 +40,8 @@ async def start_consumer():
                         context_correlation_id.set(message.correlation_id)
 
                     parsed_message = msgpack.unpackb(message.body)
-                    logger.info('Parsed message: %s', parsed_message)
+                    logger.info("Parsed message: %s", parsed_message)
 
-                    callback = CALLBACK_MAPPING[parsed_message['body']['type']]
+                    callback = CALLBACK_MAPPING[parsed_message["body"]["type"]]
 
                     _ = asyncio.create_task(callback(parsed_message))
