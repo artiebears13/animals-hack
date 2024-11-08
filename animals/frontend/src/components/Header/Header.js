@@ -25,6 +25,11 @@ const Header = ({ currentPage, setCurrentPage }) => {
                             </button>
                         </li>
 
+                        <li className={`nav-item ${currentPage === 'result' ? 'active' : ''}`}>
+                            <button className="nav-link btn btn-link" onClick={() => setCurrentPage('result')}>
+                                Результат
+                            </button>
+                        </li>
                         <li className={`nav-item ${currentPage === 'info' ? 'active' : ''}`}>
                             <button className="nav-link btn btn-link" onClick={() => setCurrentPage('info')}>
                                 Команда

@@ -521,6 +521,12 @@ code{
   color: white;
 }
 
+.btn-to_results{
+  width: 100%;
+  margin-top: 20px;
+  font-size: 20px;
+}
+
 @keyframes rotate {
   100%   {transform: rotate(360deg)}
 }

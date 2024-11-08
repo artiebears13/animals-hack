@@ -1,0 +1,63 @@
+.photoBox-container {
+    position: relative;
+    overflow: hidden;
+    width: 1000px;
+    margin: 0 auto;
+}
+
+/* Для экранов шириной менее 1080px */
+@media (max-width: 1080px) {
+    .photoBox-container {
+        width: 500px;
+    }
+}
+
+/* Для экранов шириной менее 480px */
+@media (max-width: 480px) {
+    .photoBox-container {
+        width: 100%;
+    }
+}
+.photoBox-image{
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+}
+
+.photoBox-box{
+    position: absolute;
+    background-color: transparent;
+    border: 1px solid;
+}
+.photoBox-box:hover{
+    border-width: 3px;
+}
+.hover{
+    border-width: 3px;
+}
+.hover .photoBox-label{
+    z-index: 999;
+    opacity: 1;
+
+
+}
+
+.photoBox-label {
+    position: absolute;
+    top: -20px; /* Располагаем метку над рамкой */
+    left: 0;
+    opacity: 0.5;
+    color: white;
+    padding: 2px 4px;
+    font-size: 12px;
+    border-radius: 3px;
+    white-space: nowrap;
+    z-index: 0;
+}
+
+.photoBox-box:hover .photoBox-label{
+    z-index: 999;
+    opacity: 1;
+
+
+}

@@ -4,12 +4,10 @@ import React, { useContext, useEffect } from 'react';
 import { FilesContext } from '../../contexts/FilesContext';
 import ServerErrorToast from "../../components/serverErrorToast/ServerErrorToast";
 import ResponseInfo from "../../components/responseInfo/ResponseInfo";
-import PhotoPreview from "../../components/photoPreview/PhotoPreview";
 import FileUploader from "../../components/FileUploader/FileUploader";
 
-const MainPage = () => {
+const MainPage = ( {setCurrentPage} ) => {
     const { loading, error, processedFiles } = useContext(FilesContext);
-
 
     return (
         <div className="main-page">
@@ -27,15 +25,22 @@ const MainPage = () => {
                         <span className="text-warning">AAA IT</span>
                     </h1>
                 </div>
-                {loading && (
-                    <div className="big-center loader"></div>
-                )}
+
 
                 <FileUploader />
 
                 <ResponseInfo />
                 {error && <ServerErrorToast />}
-
+                {loading && (
+                    <div className="big-center loader"></div>
+                )}
+                {
+                    processedFiles && processedFiles.length > 0 && (
+                        <button className="btn btn-secondary btn-to_results" onClick={() => setCurrentPage('result')}>
+                            Отчет
+                        </button>
+                    )
+                }
 
             </div>
         </div>

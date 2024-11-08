@@ -1,6 +1,6 @@
 // src/contexts/FilesContext.js
 
-import React, { createContext, useState } from 'react';
+import React, {createContext, useCallback, useState} from 'react';
 import { uploadFileToServer } from '../api/api';
 
 // Создаем контекст
@@ -21,16 +21,17 @@ export const FilesProvider = ({ children }) => {
     const [processedFiles, setProcessedFiles] = useState([]);
     const [sizeThreshold, setSizeThreshold] = useState({width: 128, height: 128});
 
-    const setUploadedFiles = (files) => {
+    const setUploadedFiles = useCallback((files) => {
         console.log("setSelectedFiles", files);
         setFiles(files);
-    }
+    }, []);
 
     /**
      * Функция для загрузки файла.
      */
     const uploadFiles = async () => {
         setLoading(true);
+        console.log("set loading");
         setError(null);
         setShowToast(false);
         setResponseMessage('');
@@ -40,26 +41,16 @@ export const FilesProvider = ({ children }) => {
             const formData = getFormData(files, confidenceLevel);
 
             console.log("requesting", formData);
-            uploadFileToServer(formData)
-                .then(res => {
-                    console.log({res});
-                    console.log("images", res.images)
-                    setResponseData(res.images);
-                    processFiles(res.images);
-                })
-                .catch(
-                    err => setError(`Ошибка при загрузке файла ${err}`)
-                )
-                .finally(
-                    () => setLoading(false)
-                )
-            ;
+            const res = await uploadFileToServer(formData);
+            console.log({ res });
+            console.log("images", res.images);
+            setResponseData(res.images);
+            processFiles(res.images);
 
-            // Обновляем состояние с новым файлом
-
-            // Устанавливаем сообщение ответа для отображения в тосте
-            setResponseMessage(`Файл "${responseData}" успешно загружен.`);
+            // Предполагается, что res.images содержит массив или информацию о загруженных файлах
+            setResponseMessage(`Файл(ы) успешно загружен(ы).`);
             setShowToast(true);
+
         } catch (err) {
             console.error('Ошибка при загрузке файла:', err);
             setError(err);
@@ -69,32 +60,36 @@ export const FilesProvider = ({ children }) => {
         }
     };
 
-    const getFormData = (files, confidenceLevel) => {
+    const getFormData = (files, confidenceLevel, sizeThreshold) => {
         const formData = new FormData();
         formData.append('count', files.length);
-        files.forEach((file) => {
-            formData.append('images', file);
+
+        files.forEach((file, index) => {
+            console.log(file);
+            formData.append(`images[${index}][file]`, file);
+
+            formData.append(`images[${index}][created_at]`, file.lastModified);
         });
+
         formData.append('confidence_level', confidenceLevel);
         formData.append('size_threshold', sizeThreshold);
+
         return formData;
-    }
+    };
+
 
     const processFiles = (images) => {
         setProcessedFiles(() => {
-            console.log({ images });
 
             return images.map(image => {
-                // Находим файл, имя которого совпадает с image.filename
                 const matchingFile = files.find(file => file.name === image.filename);
-
-                // Возвращаем новый объект, объединяющий данные из image и файл
                 return {
                     ...image, // все свойства из image
                     file: matchingFile // добавляем свойство file с найденным файлом
                 };
             });
         });
+
     };
 
 

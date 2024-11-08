@@ -122,6 +122,7 @@ const FileUploader = () => {
         if (e.target.files && e.target.files.length > 0) {
             const selectedFiles = Array.from(e.target.files);
             handleFiles(selectedFiles);
+            e.target.value = null;
         }
     };
 
@@ -311,6 +312,15 @@ const FileUploader = () => {
                 >
                     {loading ? 'Загрузка...' : 'Отправить'}
                 </button>
+
+                <button
+                    className="btn btn-secondary"
+                    onClick={() => setUploadedFiles([])}
+                    disabled={files.length === 0 || loading}
+                >
+                    Очистить
+                </button>
+
             </div>
 
             {errorMessage && (
