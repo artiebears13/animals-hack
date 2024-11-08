@@ -19,6 +19,7 @@ export const FilesProvider = ({ children }) => {
     const [showToast, setShowToast] = useState(false); // Отображение тоста
     const [responseMessage, setResponseMessage] = useState(''); // Сообщение ответа сервера
     const [processedFiles, setProcessedFiles] = useState([]);
+    const [sizeThreshold, setSizeThreshold] = useState({width: 128, height: 128});
 
     const setUploadedFiles = (files) => {
         console.log("setSelectedFiles", files);
