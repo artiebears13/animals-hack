@@ -6,6 +6,7 @@ import Popover from 'react-bootstrap/Popover';
 import { FilesContext } from '../../contexts/FilesContext';
 import './FileUploader.css';
 import PhotoPreview from "../photoPreview/PhotoPreview";
+import {SizeInput} from "../SizeInput/SizeInput";
 
 const FileUploader = () => {
     const {
@@ -300,6 +301,7 @@ const FileUploader = () => {
                     />
                 </div>
             </div>
+            <SizeInput />
 
             <div className="input-control__buttons" style={{ marginTop: '20px' }}>
                 <button

@@ -76,6 +76,7 @@ export const FilesProvider = ({ children }) => {
             formData.append('images', file);
         });
         formData.append('confidence_level', confidenceLevel);
+        formData.append('size_threshold', sizeThreshold);
         return formData;
     }
 
@@ -107,6 +108,8 @@ export const FilesProvider = ({ children }) => {
             confidenceLevel,
             responseData,
             processedFiles,
+            sizeThreshold,
+            setSizeThreshold,
             setUploadedFiles,
             uploadFiles,
             loading,
