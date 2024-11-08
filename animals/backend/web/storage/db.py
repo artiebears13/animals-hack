@@ -1,7 +1,8 @@
 from uuid import uuid4
 
 from asyncpg import Connection
-from sqlalchemy import AsyncAdaptedQueuePool, Boolean, Column, String
+from sqlalchemy import AsyncAdaptedQueuePool, Boolean, DateTime, Integer
+from sqlalchemy import Column, String
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import declarative_base
 from typing_extensions import AsyncGenerator
@@ -14,11 +15,17 @@ class Jobs(Base):
     __tablename__ = "jobs"
 
     uid = Column(String, primary_key=True)
-
+    processed_image_id = Column(Integer)
     is_processed = Column(Boolean)
-
     is_duplicate = Column(Boolean)
     duplicate_link = Column(String)
+
+class Images(Base):
+    __tablename__ = 'images'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    datetime = Column(DateTime)
+    image_path = Column(String)
 
 
 class CConnection(Connection):

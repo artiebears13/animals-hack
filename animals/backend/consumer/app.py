@@ -2,14 +2,16 @@ import asyncio
 import logging.config
 
 import msgpack
+
 from consumer.config.settings import settings
-from consumer.handlers.handler import search_duplicate
+from consumer.handlers.handler import process_images
+
 from consumer.logger import LOGGING_CONFIG, context_correlation_id, logger
 from consumer.storage.rabbit import channel_pool
 
 CALLBACK_MAPPING = {
-    "front_link": search_duplicate,
-    "front_file": search_duplicate,
+    "front_link": process_images,
+    "front_file": process_images,
 
 }
 
