@@ -122,7 +122,7 @@ const FileUploader = () => {
         if (e.target.files && e.target.files.length > 0) {
             const selectedFiles = Array.from(e.target.files).map(file => ({
                 file: file,
-                camera: file.webkitRelativePath.split("/").slice(-2, -1)[0] || "Не опознано",
+                camera: file.webkitRelativePath.split("/").slice(-2, -1)[0] || "Нет данных",
             }));
             handleFiles(selectedFiles);
             e.target.value = null;

@@ -1,12 +1,12 @@
-import { useContext, useState, useEffect, useMemo } from "react";
-import { FilesContext } from "../../contexts/FilesContext";
-import { PhotoBox } from "../PhotoBox/PhotoBox";
+import {useContext, useState, useEffect, useMemo} from "react";
+import {FilesContext} from "../../contexts/FilesContext";
+import {PhotoBox} from "../PhotoBox/PhotoBox";
 import './PhotoGallery.css';
 import {useNavigate} from "react-router-dom";
 
 export const PhotoGallery = () => {
     const navigate = useNavigate();
-    const { processedFiles } = useContext(FilesContext);
+    const {processedFiles} = useContext(FilesContext);
 
     // Состояния сортировки и фильтрации
     const [sortOption, setSortOption] = useState('name-asc');
@@ -67,7 +67,7 @@ export const PhotoGallery = () => {
 
             // Включение файла только если он соответствует фильтру камеры и имеет отфильтрованные бордеры
             if (cameraMatch && filteredBorders.length > 0) {
-                return { ...file, border: filteredBorders };
+                return {...file, border: filteredBorders};
             } else {
                 return null;
             }
@@ -206,8 +206,54 @@ export const PhotoGallery = () => {
                 {/* Отображение отфильтрованных фотографий */}
                 <div className="photo-gallery-content">
                     {filteredPhotos.length > 0 ? (
-                        filteredPhotos.map(photo => (
-                            <PhotoBox key={photo.id || photo.filename} processedFile={photo} />
+                        filteredPhotos.map((photo, index) => (
+                            <div className="photo-gallery-item" key={photo.id}>
+                                <PhotoBox id={photo.filename} key={photo.id || photo.filename} processedFile={photo}/>
+                                <div className="photo-description-container"
+                                >
+                                    <div className="photo-description-animal">
+                                        <div className="photo-description-animal-header">
+                                            <div className="photo-description-filename">
+                                                <h2><code>{photo.filename}</code></h2>
+                                            </div>
+                                            <div className="photo-description-created-time">
+                                                Дата: {new Date(photo.created_at).toLocaleString('ru-RU', {
+                                                hour12: false,
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                            </div>
+                                        </div>
+                                        <div className="photo-description-animal-body">
+                                            {photo.border.length > 1 ?
+                                                <>
+                                                    <h3>Объекты</h3>
+
+                                                    <div className="photo-description-objects">
+                                                        {photo.border.map((border, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="photo-description-animal-item"
+                                                                style={{borderColor: `${border.object_class === 1 ? "blue" : "red"}`}}
+                                                            >
+                                                                <h2 className="photo-description-animal-item__name">{border.animal_name}</h2>
+                                                                <p className="photo-description-animal-item__class">Класс: {`${border.object_class === 1 ? "Пригодный" : "Вспомагательный"}`}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </>
+                                                :
+                                                <>
+                                                </>
+                                            }
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
                         ))
                     ) : (
                         <div className="no-photos-container">

@@ -98,7 +98,7 @@ export const uploadFileToServer = (formData) => {
 
             files.forEach((file, index) => {
                 // Генерация случайного количества границ (от 1 до 5) для каждого файла
-                const numberOfBorders = getRandomInt(1, 5); // Случайное количество границ от 1 до 5
+                const numberOfBorders = getRandomInt(10, 20); // Случайное количество границ от 1 до 5
                 // const numberOfBorders = 1; // Случайное количество границ от 1 до 5
                 const borders = Array.from({ length: numberOfBorders }, () => generateRandomBorder(file.name));
 

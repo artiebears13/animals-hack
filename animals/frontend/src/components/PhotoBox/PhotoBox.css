@@ -2,7 +2,7 @@
     position: relative;
     overflow: hidden;
     width: 1000px;
-    margin: 0 auto;
+    margin: 0;
 }
 
 /* Для экранов шириной менее 1080px */

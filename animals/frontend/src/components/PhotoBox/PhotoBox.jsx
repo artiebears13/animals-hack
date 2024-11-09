@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import "./PhotoBox.css";
 
-export const PhotoBox = ({ processedFile }) => {
+export const PhotoBox = ({ id, processedFile }) => {
     const file = processedFile.file;
     const [preview, setPreview] = useState("");
     const [originalWidth, setOriginalWidth] = useState(0);
@@ -41,6 +41,7 @@ export const PhotoBox = ({ processedFile }) => {
     return (
         <div className="photoBox-container">
             <img
+                id={id}
                 className="photoBox-image"
                 src={preview}
                 alt={file.name}

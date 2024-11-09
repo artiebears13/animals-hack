@@ -1,7 +1,16 @@
 .photo-gallery {
     margin-top: 25px;
-    width: 100%;
 }
+.photo-gallery-item{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: column-reverse;
+    margin: 10px auto;
+    align-items: stretch;
+    flex-grow: 1;
+}
+
 
 .controls {
     display: flex;
@@ -198,7 +207,69 @@
         width: 100%;
     }
 }
+.photo-description-container{
+    width: 1000px;
+    border: 1px solid white;
+    border-radius: 15px 15px 0 0;
+    border-bottom: none;
+    align-self: stretch;
+    flex-grow: 1;
+    overflow-x: scroll;
+}
+@media (max-width: 1080px) {
+    .photo-description-container {
+        width: 500px;
+    }
+}
 
-/* -------------------------------------------------- */
-/*                 Новые Стили Конец                 */
-/* -------------------------------------------------- */
+/* Для экранов шириной менее 480px */
+@media (max-width: 480px) {
+    .photo-description-container {
+        width: 100%;
+    }
+}
+
+.photo-description-container::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and newer Edge */
+}
+.photo-description-animal{
+    width: 100%;
+}
+
+.photo-description-filename{
+    font-size: 16px;
+}
+
+.photo-description-animal-item{
+    width: 200px;
+    border: 1px solid;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.photo-description-animal-item__name{
+    width: 100%;
+    text-align: center;
+}
+
+.photo-description-animal-header{
+    padding: 20px;
+    border-bottom: 1px solid white;
+    width: 100%;
+}
+.photo-description-animal-body{
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+
+}
+.photo-description-objects{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
