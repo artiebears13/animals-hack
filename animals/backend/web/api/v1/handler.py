@@ -29,6 +29,7 @@ from .schemas import *
 from .schemas import JobMessage
 from ...models.jobs import Jobs
 from ...models.jobs_images import JobsImages
+from .utils import get_stats
 
 TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%S'
 ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png", "image/gif"]
@@ -122,7 +123,10 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
                           "height": job.image.border[3]
                           }
                          ]
-                    } for job in jobs_images]}
+
+                    } for job in jobs_images],
+        "stats": get_stats(jobs_images)
+    }
 
     return JSONResponse(result)
 
