@@ -1,3 +1,6 @@
+from sqlalchemy import insert, update, select
+from sqlalchemy.orm import joinedload
+
 from sqlalchemy import insert, update
 
 from consumer.handlers.utils import call_triton

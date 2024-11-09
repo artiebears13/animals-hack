@@ -49,7 +49,6 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
                         created_at: List[str] = Form(...),
                         camera: List[str] = Form(...),
                         session: AsyncSession = Depends(get_db)):
-
     current_id = str(uuid4())
     db_job = Jobs(uid=current_id)
     session.add(db_job)
@@ -66,15 +65,15 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
         if file.content_type not in ALLOWED_CONTENT_TYPES:
             logger.warning(f"Недопустимый тип файла: {file.filename} ({file.content_type})")
         try:
-            path = os.path.join(DIRECTORY, f"{current_id}_{index}.jpg")
+            path = os.path.join(DIRECTORY, f"{current_id}_hash_{file.filename}")
             # Асинхронно считываем содержимое файла
             with open(path, "wb+") as file_object:
                 file_object.write(file.file.read())
-            uploaded_files_name.append(f"{current_id}_{index}.jpg")
+            uploaded_files_name.append(f"{current_id}_hash_{file.filename}")
             created_at_time.append(created_at)
             valid_camera.append(camera)
         except Exception as e:
-            logger.error(f"Ошибка при чтении и сохранении файла {file.filename}: {e}")
+            logger.error(f"Ошибка при чтении и сохранении файла {current_id}_hash_{file.filename}: {e}")
             continue
 
     msg: JobMessage = {
@@ -97,12 +96,13 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
 @router.post("/get_result")
 async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db), ):
     uid = body.uid
-
+    logger.info(f"uid: {uid}")
     jobs_images = (await session.scalars(
         select(JobsImages).
         where(JobsImages.job_id == uid).
         options(joinedload(JobsImages.image))
     )).all()
+    logger.info(jobs_images)
     for job in jobs_images:
         if not job.status:
             return JSONResponse({}, status_code=200)
@@ -110,7 +110,8 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
         # "result": [{"status": job.status, "image_id": job.image_id, "border": job.image.border,
         # "filename": job.image.image_path} for job in jobs_images]}
         "error_message": "",
-        "images": [{"filename": "artmed.jpg", "created_at": f"{job.image.datetime}", "camera": job.image.camera,
+        "images": [{"filename": str(job.image.image_path).split("/")[-1].split("_hash_")[-1],
+                    "created_at": f"{job.image.datetime}", "camera": job.image.camera,
                     # "result": [{"filename": job.image.image_path, "created_at": job.image.datetime, "camera": job.image.camera,
                     "border":
                         [{"id": hash(job.image.image_path),
@@ -132,36 +133,35 @@ async def get_result(body: ResultRequest, session: AsyncSession = Depends(get_db
 
     jobs_images = (await session.scalars(
         select(JobsImages).
-        where(JobsImages.job_id == uid).
+        where(JobsImages.job_id == uid, JobsImages.status == True).
         options(joinedload(JobsImages.image))
     )).all()
 
-    filenames = [job.image.image_path for job in jobs_images]
-    borders = [job.image.border for job in jobs_images]
+    def reformat_bbox(bbox: list[int]):
+        res = ""
+        for i, cord in enumerate(bbox):
+            if i == len(bbox) - 1:
+                res += str(cord)
+            else:
+                res += str(cord) + ","
+        return res
+
+    filenames = [str(job.image.image_path).split("/")[-1].split("_hash_")[-1] for job in jobs_images]
+    borders = [reformat_bbox(job.image.border) for job in jobs_images]
     obj_class = [job.image.object_class for job in jobs_images]
-
+    logger.info(borders)
     # взять из бд data[[Name	Bbox	Class]]
-    # data = pd.DataFrame({
-    #     "Name": filenames,
-    #     "Bbox": borders,
-    #     "Class": obj_class
-    # })
-
     data = pd.DataFrame({
-        "Name": ["/data/logo.png"],
-        "Bbox": ["50,50,10,10"],
-        "Class": 1
+        "Name": filenames,
+        "Bbox": borders,
+        "Class": obj_class
     })
+
     logger.info(data)
     pdf = ImageReportPDF(f"/data/{uid}_report.pdf", data)
     pdf_file = pdf.generate()
-    # Перемещаем курсор в начало буфера
-    # pdf_file.seek(0)
 
     return FileResponse(f"/data/{uid}_report.pdf")
-    # Возвращаем PDF как ответ
-    # return StreamingResponse(pdf_file, media_type='application/pdf',
-    #                          headers={"Content-Disposition": "attachment; filename=generated.pdf"})
 
 
 async def publish_message(body: dict[str, Any]) -> None:

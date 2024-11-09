@@ -26,13 +26,13 @@ const FileUploader = () => {
     const folderInputRef = useRef(null); // Новый реф для папок
     const inputAreaRef = useRef(null); // Новый реф для папок
 
-    const popoverContent = `Допустимые форматы: jpeg, png, gif`;
+    const popoverContent = `Допустимые форматы: jpeg, png`;
 
     useEffect(() => {
         updateSliderBackground();
     }, [confidenceLevel]);
 
-    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedMimeTypes = ['image/jpeg', 'image/png'];
 
     const inputAreaClick = (e) => {
         // Можно реализовать дополнительные действия при клике на область ввода, если нужно
@@ -144,7 +144,7 @@ const FileUploader = () => {
             setErrorMessage(
                 `Неверный формат файла: ${invalidFiles.join(
                     ', '
-                )}. Пожалуйста, загрузите изображения в формате JPEG, PNG или GIF.`
+                )}. Пожалуйста, загрузите изображения в формате JPEG или PNG.`
             );
         } else {
             setErrorMessage('');
@@ -224,7 +224,7 @@ const FileUploader = () => {
                     или <span className="text-warning">выберите их вручную</span>
                 </h3>
                 <div className="drag-drop-field__extensions">
-                    Изображения (JPEG, PNG, GIF)
+                    Изображения (JPEG, PNG)
                 </div>
                 {/* Скрытый input для файлов */}
                 <input
@@ -233,7 +233,7 @@ const FileUploader = () => {
                     onChange={handleFileChange}
                     ref={fileInputRef}
                     style={{ display: 'none' }}
-                    accept="image/jpeg, image/png, image/gif"
+                    accept="image/jpeg, image/png"
                     multiple
                 />
                 <input
@@ -242,7 +242,7 @@ const FileUploader = () => {
                     onChange={handleFileChange}
                     ref={inputAreaRef}
                     style={{ display: 'none' }}
-                    accept="image/jpeg, image/png, image/gif"
+                    accept="image/jpeg, image/png"
                     multiple
                 />
                 {/* Скрытый input для папок */}
@@ -252,7 +252,7 @@ const FileUploader = () => {
                     onChange={handleFileChange}
                     ref={folderInputRef}
                     style={{ display: 'none' }}
-                    accept="image/jpeg, image/png, image/gif"
+                    accept="image/jpeg, image/png"
                     multiple
                     webkitdirectory="true" // Позволяет выбирать папки
                     directory="" // Для некоторых браузеров
