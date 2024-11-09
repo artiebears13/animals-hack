@@ -1,9 +1,17 @@
 .DEFAULT_GOAL := help
 
-
 HOST ?= 0.0.0.0
 BACKEND_PORT ?= 8000
 FRONTEND_PORT ?= 3000
+FILE_ID="1KcbPfoQGxSi9Dz9SorR6ZoVuUtAGO8nB"
+
+
+## Load model weights
+load-weights:
+	pip install --no-cache-dir gdown
+	gdown "https://drive.google.com/uc?id=${FILE_ID}" \
+	     -O animals/triton/models/detector/1/weights.pt
+	pip uninstall -q -y gdown
 
 
 ## Install Python dependencies

@@ -56,6 +56,8 @@ contextvars = "2.4"
 python-multipart = "^0.0.11"
 reportlab = "^4.2.5"
 pandas = "^2.2.3"
+onnx = "^1.17.0"
+
 
 [build-system]
 requires = ["poetry-core"]

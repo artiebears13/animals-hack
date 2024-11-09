@@ -369,3 +369,7 @@ sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/react,python,jupyternotebooks,pycharm+all,webstorm
 
+data/train_data_minprirodi/*
+data/output.pdf
+*.onnx
+notebooks/*
