@@ -372,5 +372,5 @@ sketch
 data/train_data_minprirodi/*
 data/output.pdf
 *.onnx
-notebooks/*
+notebooks/*.ipynb
 *.pt
