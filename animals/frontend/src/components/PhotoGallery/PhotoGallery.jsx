@@ -196,7 +196,7 @@ export const PhotoGallery = () => {
 
                         {/* Фильтр по животным */}
                         <div className="filter-section">
-                            <h3>Животные:</h3>
+                            <h3>Классы:</h3>
                             {animalOptions.map((animal) => (
                                 <label key={animal}>
                                     <input

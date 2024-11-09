@@ -11,7 +11,8 @@ import { uploadFileToServer as mockUploadFile, getFilesFromServer as mockGetFile
 // import axios from 'axios';
 
 export const uploadFileToServer = async (formData) => {
-  const response = await fetch('http://localhost/service/api/v1/upload_images', {
+  // const response = await fetch('http://192.168.11.177/service/api/v1/upload_images', {
+  const response = await fetch('/service/api/v1/upload_images', {
     method: 'POST',
     body: formData,
     headers: {
@@ -27,7 +28,7 @@ export const uploadFileToServer = async (formData) => {
 };
 
 export const downloadFilesFromServer = async (uid) => {
-    const response = await fetch('http://localhost/service/api/v1/get_result', {
+    const response = await fetch('/service/api/v1/get_result', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ export const downloadFilesFromServer = async (uid) => {
 
 
 export const getPdfFile = async (uid) => {
-    const file = await fetch('http://localhost/service/api/v1/get_result_report', {
+    const file = await fetch('/service/api/v1/get_result_report', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

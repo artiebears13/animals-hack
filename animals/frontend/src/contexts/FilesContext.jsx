@@ -59,7 +59,6 @@ export const FilesProvider = ({ children }) => {
                     console.log({uid});
                     console.log('type', typeof uid);
                     res = await downloadResponse(uid);  // Загружаем ответ от сервера
-
                     if (Object.keys(res).length > 0) {
                         // Если данные есть, прекращаем попытки и возвращаем результат
                         break;
@@ -74,8 +73,10 @@ export const FilesProvider = ({ children }) => {
                 return res;
             };
             const res = await retryDownload(uid);
+            console.log("res", res);
             if (Object.keys(res).length > 0) {
                 // Если ответ не пустой, обрабатываем файлы
+                console.log("results", res.images);
                 processFiles(res.images);
                 processStats(res.stats);
                 setResponseMessage(`Файл(ы) успешно загружен(ы).`);
@@ -117,12 +118,18 @@ export const FilesProvider = ({ children }) => {
 
     const processFiles = (images) => {
         setProcessedFiles(() => {
-
             return images.map(image => {
                 const matchingFile = files.find(file => file.file.name === image.filename);
+
+                const updatedBorders = image.border.map(borderObject => ({
+                    ...borderObject, // сохраняем все остальные поля
+                    animal_name: borderObject.object_class === 1 ? "качественное" : "вспомагательное", // меняем animal_name
+                }));
+
                 return {
-                    ...image, // все свойства из image
-                    file: matchingFile.file, // добавляем свойство file с найденным файлом
+                    ...image, // сохраняем все остальные свойства из image
+                    file: matchingFile ? matchingFile.file : null, // добавляем свойство file с найденным файлом
+                    border: updatedBorders, // заменяем border с обновленными значениями
                 };
             });
         });
