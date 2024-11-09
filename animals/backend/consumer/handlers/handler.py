@@ -1,4 +1,6 @@
-from sqlalchemy import insert, update
+from sqlalchemy import insert, update, select
+from sqlalchemy.orm import joinedload
+
 from web.api.v1.schemas import JobMessage
 from web.logger import logger
 from web.models.images import Images
@@ -31,16 +33,24 @@ async def process_images(message: JobMessage) -> None:
             for image_id in image_ids
         ]))
 
+        #######################
+        # do smth with pictures here
+        #######################
+
+        for image_id in image_ids:
+            await session.execute(
+                update(JobsImages).
+                where(JobsImages.job_id == message["uid"], JobsImages.image_id == image_id).
+                values(status=True)
+            )
+
+            await session.execute(
+                update(Images).
+                where(Images.id == image_id).
+                values(border=[1, 2, 3, 4], object_class=1)
+            )
+
         await session.commit()
-
-        example_id = image_ids[0]
-
-        await session.execute(
-            update(JobsImages).
-            where(JobsImages.job_id == message["uid"], JobsImages.image_id == example_id).
-            values(status=True)
-        )
-
         # await session.execute(
         #     update(Images).
         #     where(Images.id == example_id).
