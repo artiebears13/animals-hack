@@ -3,7 +3,7 @@
 HOST ?= 0.0.0.0
 BACKEND_PORT ?= 8000
 FRONTEND_PORT ?= 3000
-FILE_ID="1KcbPfoQGxSi9Dz9SorR6ZoVuUtAGO8nB"
+FILE_ID="1dHdb3iHpxV_K4R5XQ_VW-sibM29xbm_7"
 
 
 ## Copy .env example files
@@ -15,7 +15,7 @@ copy-env-files:
 load-weights:
 	pip install --no-cache-dir gdown
 	gdown "https://drive.google.com/uc?id=${FILE_ID}" \
-	     -O animals/triton/models/detector/1/weights.pt
+	     -O animals/triton/models/detector/1/model.onnx
 	pip uninstall -q -y gdown
 
 

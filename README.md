@@ -16,6 +16,11 @@
 
 ## Быстрый старт
 
+### 0. Скачивание весов (происходит автоматически в нужную папку):
+```bash
+make load-weights
+```
+
 ### 1. Сборка проекта через Docker-Compose:
 ```bash
 docker compose up --build
