@@ -1,6 +1,6 @@
 if __name__ == "__main__":
     import uvicorn
-    from .config.settings import settings
+    from web.config.settings import settings
 
     uvicorn.run(
         "web.app:create_app",
