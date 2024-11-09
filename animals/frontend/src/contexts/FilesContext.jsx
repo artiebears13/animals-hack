@@ -21,7 +21,7 @@ export const FilesProvider = ({ children }) => {
     const [processedFiles, setProcessedFiles] = useState([]);
     const [sizeThreshold, setSizeThreshold] = useState({width: 128, height: 128});
     const [getResponse, setGetResponse] = useState(false);
-    const [jobId, setJobId] = useState("lsdkjlksdjflksd");
+    const [jobId, setJobId] = useState("hui");
 
     const setUploadedFiles = useCallback((files) => {
         console.log("setSelectedFiles", files);
@@ -46,7 +46,7 @@ export const FilesProvider = ({ children }) => {
             const res = await uploadFileToServer(formData);
             console.log({ res });
             console.log("images", res.images);
-            setResponseData(res.images);
+            // setResponseData(res.images);
             processFiles(res.images);
 
             // Предполагается, что res.images содержит массив или информацию о загруженных файлах
@@ -54,8 +54,8 @@ export const FilesProvider = ({ children }) => {
             setShowToast(true);
 
         } catch (err) {
-            console.error('Ошибка при загрузке файла:', err);
-            setError(err);
+            console.error('Ошибка при загрузке файла:', err.message);
+            setError('Ошибка при загрузке файла');
             setShowToast(true);
         } finally {
             setLoading(false);
@@ -106,6 +106,7 @@ export const FilesProvider = ({ children }) => {
             setConfidenceLevel,
             confidenceLevel,
             getResponse,
+            jobId,
             setGetResponse,
             responseData,
             processedFiles,
@@ -115,6 +116,7 @@ export const FilesProvider = ({ children }) => {
             uploadFiles,
             loading,
             error,
+            setError,
             showToast,
             setShowToast,
             responseMessage

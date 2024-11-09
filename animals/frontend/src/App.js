@@ -8,10 +8,12 @@ import { PhotoGallery } from "./components/PhotoGallery/PhotoGallery";
 import MainPage from "./pages/MainPage/MainPage";
 import InfoPage from "./pages/InfoPage/InfoPage";
 import { Footer } from "./components/Footer/Footer";
+import ServerErrorToast from "./components/serverErrorToast/ServerErrorToast";
 
 const App = () => {
     return (
         <FilesProvider>
+
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                 <div className="App">
                     <Header />

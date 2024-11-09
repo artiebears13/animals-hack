@@ -3,16 +3,16 @@ import React, { useEffect, useContext } from 'react';
 import { FilesContext } from '../../contexts/FilesContext'; // Убедитесь, что путь правильный
 
 const ServerErrorToast = () => {
-    const { errorCode, errorMessage, setErrorCode, setErrorMessage } = useContext(FilesContext);
+    const { error, setError } = useContext(FilesContext);
+    console.log({error});
 
     const onClose = (e) => {
         e.stopPropagation(); // Предотвращает всплытие события клика
-        setErrorCode(null);
-        setErrorMessage(null);
+        setError(null);
     };
 
     useEffect(() => {
-        if (errorCode) {
+        if (error) {
             const toastElement = document.querySelector('.custom-toast');
             if (toastElement) {
                 // Удаляем класс 'show' перед добавлением, чтобы анимация срабатывала заново
@@ -23,9 +23,8 @@ const ServerErrorToast = () => {
                 }, 100);
             }
         }
-    }, [errorCode]);
+    }, [error]);
 
-    if (!errorCode) return null;
 
     return (
         <div
@@ -42,7 +41,7 @@ const ServerErrorToast = () => {
             </button>
             <div>
                 <h4 className="toast-header">Ошибка обработки</h4>
-                <p>{errorCode}: {errorMessage}</p>
+                <p>{error}</p>
             </div>
         </div>
     );

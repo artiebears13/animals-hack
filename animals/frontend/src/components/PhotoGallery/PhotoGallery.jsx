@@ -1,12 +1,14 @@
-import {useContext, useState, useEffect, useMemo} from "react";
+import React, {useContext, useState, useEffect, useMemo} from "react";
 import {FilesContext} from "../../contexts/FilesContext";
 import {PhotoBox} from "../PhotoBox/PhotoBox";
 import './PhotoGallery.css';
 import {useNavigate} from "react-router-dom";
+import {DownloadPdfButton} from "../DownloadPdfButton/DownloadPdfButton";
+import ServerErrorToast from "../serverErrorToast/ServerErrorToast";
 
 export const PhotoGallery = () => {
     const navigate = useNavigate();
-    const {processedFiles} = useContext(FilesContext);
+    const {processedFiles, error} = useContext(FilesContext);
     console.log({processedFiles})
 
     // Состояния сортировки и фильтрации
@@ -144,8 +146,13 @@ export const PhotoGallery = () => {
 
     return (
         <div className="main-page">
+            {error && <ServerErrorToast />}
+            <div className="results-header-container">
             <h1 className="results-header">Результаты обработки</h1>
+            <DownloadPdfButton />
+            </div>
             <div className="photo-gallery">
+                <h1 className="results-header">Галерея</h1>
                 {/* Элементы управления сортировкой и фильтрацией */}
                 <div className="controls">
                     {/* Выпадающий список для сортировки */}

@@ -277,3 +277,17 @@
     align-items: center;
     gap: 10px;
 }
+
+.results-header-container{
+    position: relative;
+    width: 100%;
+}
+.download-button-container{
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid white;
+}

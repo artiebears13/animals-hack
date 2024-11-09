@@ -5,6 +5,7 @@ import donskow from "../../assets/donskow.png";
 import ivan from "../../assets/ivan.png";
 import tmn from "../../assets/tmn.png";
 import './style.css';
+import ServerErrorToast from "../../components/serverErrorToast/ServerErrorToast";
 
 const InfoPage = () => {
     const we = {

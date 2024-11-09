@@ -9,7 +9,7 @@ import {useNavigate} from "react-router-dom";
 
 const MainPage = ( ) => {
     const navigate = useNavigate();
-    const { loading, error, processedFiles, getResponse, setGetResponse } = useContext(FilesContext);
+    const { loading, error, processedFiles, getResponse, setGetResponse, errorMessage } = useContext(FilesContext);
     const [responseInfo, setResponseInfo] = useState(false);
 
     useEffect(() => {
