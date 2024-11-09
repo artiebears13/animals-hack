@@ -7,6 +7,7 @@ import {useNavigate} from "react-router-dom";
 export const PhotoGallery = () => {
     const navigate = useNavigate();
     const {processedFiles} = useContext(FilesContext);
+    console.log({processedFiles})
 
     // Состояния сортировки и фильтрации
     const [sortOption, setSortOption] = useState('name-asc');
@@ -81,9 +82,9 @@ export const PhotoGallery = () => {
                 case 'name-desc':
                     return b.filename.toLowerCase().localeCompare(a.filename.toLowerCase());
                 case 'date-asc':
-                    return new Date(a.created_at) - new Date(b.created_at);
+                    return new Date(Number(a.created_at)) - new Date(Number(b.created_at));
                 case 'date-desc':
-                    return new Date(b.created_at) - new Date(a.created_at);
+                    return new Date(Number(b.created_at)) - new Date(Number(a.created_at));
                 default:
                     return a.filename.toLowerCase().localeCompare(b.filename.toLowerCase());
             }
@@ -207,7 +208,7 @@ export const PhotoGallery = () => {
                 <div className="photo-gallery-content">
                     {filteredPhotos.length > 0 ? (
                         filteredPhotos.map((photo, index) => (
-                            <div className="photo-gallery-item" key={photo.id}>
+                            <div className="photo-gallery-item" key={index}>
                                 <PhotoBox id={photo.filename} key={photo.id || photo.filename} processedFile={photo}/>
                                 <div className="photo-description-container"
                                 >
@@ -217,7 +218,7 @@ export const PhotoGallery = () => {
                                                 <h2><code>{photo.filename}</code></h2>
                                             </div>
                                             <div className="photo-description-created-time">
-                                                Дата: {new Date(photo.created_at).toLocaleString('ru-RU', {
+                                                Дата: {new Date(Number(photo.created_at)).toLocaleString('ru-RU', {
                                                 hour12: false,
                                                 year: 'numeric',
                                                 month: '2-digit',
@@ -227,29 +228,7 @@ export const PhotoGallery = () => {
                                             })}
                                             </div>
                                         </div>
-                                        <div className="photo-description-animal-body">
-                                            {photo.border.length > 1 ?
-                                                <>
-                                                    <h3>Объекты</h3>
 
-                                                    <div className="photo-description-objects">
-                                                        {photo.border.map((border, index) => (
-                                                            <div
-                                                                key={index}
-                                                                className="photo-description-animal-item"
-                                                                style={{borderColor: `${border.object_class === 1 ? "blue" : "red"}`}}
-                                                            >
-                                                                <h2 className="photo-description-animal-item__name">{border.animal_name}</h2>
-                                                                <p className="photo-description-animal-item__class">Класс: {`${border.object_class === 1 ? "Пригодный" : "Вспомагательный"}`}</p>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </>
-                                                :
-                                                <>
-                                                </>
-                                            }
-                                        </div>
 
                                     </div>
                                 </div>

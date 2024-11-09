@@ -158,9 +158,13 @@
 
 /* Стили для панели фильтров */
 .filters-panel {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
     background-color: #2a2b2f;
     color: #fff;
-    padding: 20px;
+    padding: 20px 50px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     animation: display 0.3s ease, opacity 0.3s ease;

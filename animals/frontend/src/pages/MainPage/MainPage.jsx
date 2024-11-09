@@ -46,7 +46,7 @@ const MainPage = ( ) => {
                     <div className="big-center loader"></div>
                 )}
                 {
-                    processedFiles && processedFiles.length > 0 && (
+                    processedFiles && processedFiles.length > 0 && !loading && (
                         <button className="btn btn-secondary btn-to_results" onClick={() => navigate('/result')}>
                             Отчет
                         </button>

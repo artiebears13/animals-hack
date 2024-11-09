@@ -6,7 +6,7 @@ import msgpack
 import sqlalchemy
 from aio_pika import Message
 from aio_pika.abc import DeliveryMode, ExchangeType
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, File, Form, UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
@@ -16,8 +16,62 @@ from web.config.settings import settings
 from web.logger import logger
 from web.storage.db import Jobs, get_db
 from web.storage.rabbit import channel_pool
+from typing import List, Dict
+from pydantic import BaseModel
+from pathlib import Path
 
 from .router import router
+
+
+class ImageData(BaseModel):
+    file: UploadFile
+    camera: str
+    created_at: int
+
+# class FormData(BaseModel):
+#     count: int
+#     images: List[ImageData]
+#     confidence_level: int
+#     size_threshold: int
+
+class SizeThreshold(BaseModel):
+    width: int
+    height: int
+
+UPLOAD_DIR = Path("uploaded_files")
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+@router.post("/upload")
+async def upload_files(
+    confidence_level: str = Form(...),  # Accept confidence level
+    size_threshold: str = Form(...),    # Accept size threshold
+    images: List[UploadFile] = Form(...),  # Accept files
+    camera: List[str] = Form(...),  # Accept cameras info (as list of strings)
+    created_at: List[int] = Form(...),  # Accept cameras info (as list of strings)
+):
+    # Loop through each uploaded file
+    for idx, file in enumerate(images):
+        camera_info = camera[idx]
+        created_at_value = created_at[idx]
+
+        # Read the file content (binary data)
+        contents = await file.read()
+
+        # Define the file path where the file will be saved
+        file_path = UPLOAD_DIR / f"{file.filename}"
+
+        # Save the file to the defined directory
+        with open(file_path, "wb") as f:
+            f.write(contents)
+
+        # Process the file and its metadata
+        logger.info(f"Processing file: {file.filename}")
+        logger.info(f"Camera: {camera_info=}")
+        logger.info(f"Camera: {created_at=}")
+        logger.info(f"Created at: {created_at_value=}")
+        print(f"File saved at: {file_path}")
+
+    return {"message": "Files uploaded and saved successfully!"}
 
 
 @router.post("/upload_image")

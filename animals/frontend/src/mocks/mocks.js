@@ -1,4 +1,3 @@
-// src/mocks/mocks.js
 import { v4 as uuidv4 } from 'uuid';
 
 /**
@@ -11,7 +10,6 @@ const getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-
 const getRandomFloat = (min, max) => Math.random() * (max - min) + min;
 
 // Функция для генерации случайной рамки с нормализованными координатами
@@ -22,21 +20,15 @@ const generateRandomBorder = (fileName) => {
 
     return {
         id: uuidv4(),
-        animal_name: getRandomInt(0, 1)>0.5 ? "хуй": "пизда", // Замените на актуальное название или сделайте параметром
-        // animal_name: "пизд  а", // Замените на актуальное название или сделайте параметром
+        animal_name: getRandomInt(0, 1) > 0.5 ? "хуй" : "пизда", // Замените на актуальное название или сделайте параметром
         object_class: getRandomInt(0, 1),
-        // object_class: 1,
         left_up_corner: {
             // Обеспечиваем, что рамка не выйдет за пределы изображения
             x: getRandomFloat(0, 1 - width),
             y: getRandomFloat(0, 1 - height),
-            // x: 0.5,
-            // y: 0.5,
         },
         width: width,
         height: height,
-        // width: 0.2,
-        // height: 0.2,
     };
 };
 
@@ -46,46 +38,30 @@ const generateRandomBorder = (fileName) => {
  * @returns {Promise<Object>} - Возвращает данные загруженного файла.
  */
 export const uploadFileToServer = (formData) => {
-
-    // const response = await fetch('/api/v1/upload_images', {
-    //     method: 'POST',
-    //     body: formData,
-    // });
-    // const data = await response.json();
-
+    console.log("in uploadFileToServer");
     const count = parseInt(formData.get('count'), 10);
     console.log(`Количество файлов: ${count}`);
-    console.log(`FormData: ${formData.getAll('files')}`);
+    console.log(`FormData: ${formData.getAll('images')}`);
 
     const files = [];
     const createdAtArray = [];
     const cameraArray = [];
 
+    // Обрабатываем файлы и их метаданные
     for (let i = 0; i < count; i++) {
-        const fileKey = `images[${i}][file]`;
-        const createdAtKey = `images[${i}][created_at]`;
-        const cameraKey = `images[${i}][camera]`;
-
-        const file = formData.get(fileKey);
-        const createdAt = formData.get(createdAtKey);
-        const camera = formData.get(cameraKey);
+        const file = formData.getAll('images')[i]; // Получаем файл
+        const createdAt = formData.getAll('created_at')[i]; // Получаем дату создания
+        const camera = formData.getAll('camera')[i]; // Получаем камеру
 
         if (file) {
             files.push(file);
-            if (createdAt) {
-                createdAtArray.push(createdAt);
-            } else {
-                createdAtArray.push(null); // Или задайте значение по умолчанию
-            }
-            if (camera) {
-                cameraArray.push(camera);
-            } else {
-                cameraArray.push(null); // Или задайте значение по умолчанию
-            }
+            createdAtArray.push(createdAt || null); // Если даты нет, добавляем null
+            cameraArray.push(camera || null); // Если камеры нет, добавляем null
         } else {
             console.warn(`Файл для индекса ${i} не найден.`);
         }
     }
+
     return new Promise((resolve, reject) => {
         // Симулируем задержку сервера (например, 3 секунды)
         setTimeout(() => {
@@ -93,19 +69,19 @@ export const uploadFileToServer = (formData) => {
                 reject(new Error('Файл не был загружен.'));
                 return;
             }
+
             let response = {};
             let uploadedFiles = [];
 
             files.forEach((file, index) => {
                 // Генерация случайного количества границ (от 1 до 5) для каждого файла
-                const numberOfBorders = getRandomInt(10, 20); // Случайное количество границ от 1 до 5
-                // const numberOfBorders = 1; // Случайное количество границ от 1 до 5
+                const numberOfBorders = getRandomInt(1, 5); // Случайное количество границ от 1 до 5
                 const borders = Array.from({ length: numberOfBorders }, () => generateRandomBorder(file.name));
 
                 uploadedFiles.push({
                     filename: file.name,
-                    created_at: file.lastModified,
-                    camera: cameraArray[index],
+                    created_at: createdAtArray[index], // Добавляем дату
+                    camera: cameraArray[index], // Добавляем камеру
                     border: borders, // Добавляем массив случайно сгенерированных границ
                 });
             });
