@@ -11,7 +11,7 @@ copy-env-files:
 	cp animals/backend/consumer/config/.env.example animals/backend/consumer/config/.env
 	cp animals/backend/web/config/.env.example animals/backend/web/config/.env
 
-## Load model weights
+## Load model weights  https://drive.google.com/drive/folders/1qfZ_lWVH7vOSif_Dadw-LoQkKq6GZ8Ht
 load-weights:
 	pip install --no-cache-dir gdown
 	gdown "https://drive.google.com/uc?id=${FILE_ID}" \
