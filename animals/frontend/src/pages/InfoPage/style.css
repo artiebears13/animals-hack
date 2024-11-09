@@ -1,0 +1,46 @@
+.animated-card {
+    width: 320px;
+    margin: auto;
+    transition: all 0.3s ease; /* Add smooth transition for box-shadow */
+    border-radius: 20px;
+    height: 576px;
+}
+
+.animated-card > p {
+    margin: 0;
+}
+
+
+.animated-card > img{
+    border-radius: 20px 20px 0 0;
+    height: 320px;
+    width: 320px;
+}
+
+.animated-card:hover {
+    box-shadow: 0 0 10px rgba(246, 208, 80, 0.5); /* Apply box shadow on hover */
+    transform: scale(1.05);
+}
+.btn-card__bottom{
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+}
+.description-icon{
+    margin-right: 16px;
+    color: #4d5053;
+}
+.card-badge{
+    background-color: transparent;
+    border-radius: 15px;
+    min-width: 64px;
+    height: 22px;
+    font-size: 19px;
+    text-align: right;
+    position: absolute;
+    padding: -5px;
+    top: 335px;
+    right: 15px;
+    color: #50973f;
+}
+

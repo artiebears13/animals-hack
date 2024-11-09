@@ -1,0 +1,13 @@
+.container-fluid > button{
+    align-self: flex-end;
+}
+nav {
+    background-color: transparent;
+}
+
+.navbar-img{
+    height: 20px;
+    position: absolute;
+    top: calc(50% - 10px);
+    right: 3%;
+}

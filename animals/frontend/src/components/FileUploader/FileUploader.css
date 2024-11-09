@@ -1,0 +1,220 @@
+.drag-drop-field {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.drag-drop-field p {
+    margin: 0;
+}
+
+.drag-drop-field:hover {
+    border-color: #aaa;
+}
+
+.drag-drop-field.active {
+    background-color: #f0f0f0;
+}
+
+.drag-drop-field__extensions {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #aaa;
+}
+
+.link-input-container {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    border: 2px dashed white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.link-input-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.link-input-field {
+    position: relative;
+    width: 100%;
+}
+
+.confidence-level-controls {
+    display: flex;
+    align-items: center;
+}
+
+.confidence-slider {
+    -webkit-appearance: none; /* Убираем стандартный стиль для WebKit */
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #f4c142 0%, #f4c142 50%, #2c3034 50%, #2c3034 100%);
+    outline: none;
+    margin: 10px 0;
+    position: relative;
+    transition: background 0.3s ease;
+}
+
+.confidence-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #000000;
+    cursor: pointer;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.confidence-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #000000;
+    cursor: pointer;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.confidence-slider::-ms-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #000000;
+    cursor: pointer;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+}
+
+.confidence-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    background: transparent;
+}
+
+.confidence-slider::-moz-range-track {
+    width: 100%;
+    height: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    background: transparent;
+}
+
+.confidence-slider::-ms-track {
+    width: 100%;
+    height: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+}
+
+.confidence-number{
+    width: 80px;
+    margin-left: 10px;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    background-color: #2c3034;
+    text-align: center;
+}
+
+.confidence-number:focus{
+    outline: none;
+    border: 1px solid #f4c142;
+}
+
+.input-control__buttons{
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+
+
+.uploaded-file__container{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.uploaded-file__filename{
+
+}
+
+.uploaded-file__item{
+    margin: 10px 10px 0 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /*border-bottom: 1px solid #f0f0f0;*/
+    background-color: rgba(109, 116, 123, 0.5);
+    border-radius: 15px;
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+}
+
+.uploaded-file__item.wrong{
+    background-color: rgba(241, 40, 40, 0.5);
+}
+
+.uploaded-file__item > span{
+    font-size: 16px;
+}
+.uploaded-file__button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 0;
+    background-color: black;
+    opacity: 0.7;
+    border: none;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+}
+
+.import_files{
+    text-decoration: underline 1px;
+}
+.import_files:hover{
+    cursor: pointer;
+    color: gray;
+}

@@ -1,0 +1,111 @@
+.photo-gallery{
+    margin-top: 25px;
+    width: 100%;
+}
+
+.controls{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+.sort-button{
+    background-color: #2d3034;
+    opacity: 0.8;
+}
+.sort-button:hover{
+    background-color: #2d3034;
+    opacity: 1;
+}
+
+.class-select{
+    background-color: #2d3034;
+}
+.class-select:focus{
+    background-color: #2d3034;
+}
+
+.class-select > option{
+    background-color: #2d3034;
+}
+.animal-filters{
+    background-color: #2d3034;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+.animal-filters label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    user-select: none; /* Запрет выделения текста при клике */
+    font-size: 16px;
+    gap: 5px
+}
+
+.animal-filters input[type="checkbox"] {
+    opacity: 1;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+}
+
+
+
+.animal-filters input[type="checkbox"]:checked + span::after,
+.animal-filters input[type="checkbox"]:checked + label::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+}
+
+.animal-filters input[type="checkbox"]:checked + label::before {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+/* Эффект при наведении */
+.animal-filters label:hover::before {
+    background-color: #f0f0f0;
+}
+
+.photo-gallery-content{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+.no-photos-container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.no-photos{
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 24px;
+}
