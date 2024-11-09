@@ -4,7 +4,6 @@ import { FilesContext } from '../../contexts/FilesContext'; // Убедитес�
 
 const ServerErrorToast = () => {
     const { error, setError } = useContext(FilesContext);
-    console.log({error});
 
     const onClose = (e) => {
         e.stopPropagation(); // Предотвращает всплытие события клика

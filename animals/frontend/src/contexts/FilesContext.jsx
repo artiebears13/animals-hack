@@ -24,13 +24,11 @@ export const FilesProvider = ({ children }) => {
     const [jobId, setJobId] = useState("");
 
     const setUploadedFiles = useCallback((files) => {
-        console.log("setSelectedFiles", files);
         setFiles(files);
     }, []);
 
     const downloadResponse = async () => {
         const res = await downloadFilesFromServer(jobId);
-        console.log("download response", res)
         return res;
     }
 
@@ -40,8 +38,6 @@ export const FilesProvider = ({ children }) => {
     const uploadFiles = async () => {
         setJobId("");
         setLoading(true);
-        console.log("set loading");
-        console.log("sizeThreshold", sizeThreshold);
         setError(null);
         setShowToast(false);
         setResponseMessage('');
@@ -50,7 +46,6 @@ export const FilesProvider = ({ children }) => {
         try {
             const formData = getFormData(files, confidenceLevel);
 
-            console.log("requesting", formData);
             const uid = await uploadFileToServer(formData);
             setJobId(uid);
 
@@ -69,7 +64,6 @@ export const FilesProvider = ({ children }) => {
                     }
 
                     attempts += 1;
-                    console.log(`Attempt ${attempts}: Empty response, retrying...`);
 
                     // Тайм-аут перед следующей попыткой
                     await new Promise(resolve => setTimeout(resolve, 500));  // 500 ms
@@ -106,18 +100,11 @@ export const FilesProvider = ({ children }) => {
         formData.append('count', files.length);
 
         files.forEach((file, index) => {
-            console.log({sizeThreshold});
-            console.log("data", file.file.lastModified);
             formData.append(`images`, file.file);
             formData.append(`camera`, file.camera);
-            formData.append(`created_at`, file.file.lastModified);
+            const createdAt = new Date(file.file.lastModified);
+            formData.append(`created_at`, createdAt.toISOString());
         });
-        console.log("szThresh", sizeThreshold);
-        console.log("szThresh1", {...sizeThreshold});
-        console.log("szThresh1", JSON.stringify({...sizeThreshold}));
-
-
-
         formData.append('confidence_level', confidenceLevel);
         formData.append('size_threshold', JSON.stringify(sizeThreshold));
 
@@ -126,7 +113,6 @@ export const FilesProvider = ({ children }) => {
 
 
     const processFiles = (images) => {
-        console.log({images, files})
         setProcessedFiles(() => {
 
             return images.map(image => {

@@ -46,7 +46,6 @@ const FileUploader = () => {
 
     // Обработчик клика для выбора папок
     const handleFolderButtonClick = (e) => {
-        console.log("folderButtonClick");
         e.stopPropagation(); // Останавливаем всплытие события
         if (folderInputRef.current) {
             folderInputRef.current.click();
@@ -91,7 +90,6 @@ const FileUploader = () => {
 
     // Обновленная функция traverseFileTree для сбора пути к файлам
     const traverseFileTree = (item, path, fileList) => {
-        console.log("parse tree");
         return new Promise((resolve) => {
             if (item.isFile) {
                 item.file((file) => {
@@ -118,7 +116,6 @@ const FileUploader = () => {
     };
 
     const handleFileChange = (e) => {
-        console.log(e);
         if (e.target.files && e.target.files.length > 0) {
             const selectedFiles = Array.from(e.target.files).map(file => ({
                 file: file,

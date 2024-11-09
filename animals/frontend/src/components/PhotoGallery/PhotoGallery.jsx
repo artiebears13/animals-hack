@@ -9,7 +9,6 @@ import ServerErrorToast from "../serverErrorToast/ServerErrorToast";
 export const PhotoGallery = () => {
     const navigate = useNavigate();
     const {processedFiles, error} = useContext(FilesContext);
-    console.log({processedFiles})
 
     // Состояния сортировки и фильтрации
     const [sortOption, setSortOption] = useState('name-asc');
