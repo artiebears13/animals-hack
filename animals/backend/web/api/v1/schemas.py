@@ -61,3 +61,24 @@ class MessageBody(TypedDict):
 class JobMessage(TypedDict):
     uid: str
     body: MessageBody
+
+class ResultRequest(BaseModel):
+    uid: str
+
+
+# class FileImageResponse:
+#     file: UploadFile = File(...)
+#     created_at: int = Field(...)
+#     camera: str = Field(...)
+
+
+class SizeThreshold(BaseModel):
+    width: int = Field(..., gt=0)
+    height: int = Field(..., gt=0)
+
+
+# class AnimalsImageResponse(BaseModel):
+#     count: int = Field(..., description="Количество изображений"),
+#     images_times: List[FileImageResponse] = Form(..., ),
+#     confidence_level: float = Field(default=0.95, description="Уровень уверенности предсказания", ge=0, le=1),
+#     size_threshold: SizeThreshold

@@ -1,5 +1,7 @@
+import io
 from datetime import datetime
 
+import pandas as pd
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
@@ -8,7 +10,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
-from animals.backend.config import DATE_FORMAT, EMAIL, Font, Logo
+from .config_report import DATE_FORMAT, EMAIL, Font, Logo
 
 # Constants
 PDF_MARGIN_TOP = 0.0 * inch
@@ -41,16 +43,16 @@ class ImageReportPDF:
     @staticmethod
     def _setup_styles():
         title_style = ParagraphStyle(
-        "Title", fontName=Font.NAME, fontSize=18, alignment=1, spaceAfter=12,
+            "Title", fontName=Font.NAME, fontSize=18, alignment=1, spaceAfter=12,
         )
         date_style = ParagraphStyle(
-        "Date", fontName=Font.NAME, fontSize=10, alignment=2, spaceAfter=10,
+            "Date", fontName=Font.NAME, fontSize=10, alignment=2, spaceAfter=10,
         )
         text_style = ParagraphStyle(
-        "BodyText", fontName=Font.NAME, fontSize=10, alignment=1,
+            "BodyText", fontName=Font.NAME, fontSize=10, alignment=1,
         )
         footer_style = ParagraphStyle(
-        "Footer", fontName=Font.NAME, fontSize=8, alignment=2,
+            "Footer", fontName=Font.NAME, fontSize=8, alignment=2,
         )
         return title_style, date_style, text_style, footer_style
 
@@ -122,3 +124,4 @@ class ImageReportPDF:
         self.add_table()
 
         pdf.build(self.elements, onFirstPage=self.add_footer, onLaterPages=self.add_footer_later_pages)
+        return  pdf

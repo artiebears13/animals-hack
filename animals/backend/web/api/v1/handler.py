@@ -2,7 +2,7 @@ import contextlib
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
-
+import pandas as pd
 import msgpack
 import sqlalchemy
 from aio_pika import Message
@@ -11,9 +11,13 @@ from fastapi import Depends
 from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
-from starlette.responses import JSONResponse
+from fastapi.responses import StreamingResponse
+from starlette.responses import JSONResponse, FileResponse
 from starlette_context import context
 from starlette_context.errors import ContextDoesNotExistError
+
+from consumer.handlers.utils.reports import ImageReportPDF
+from consumer.handlers.utils.bbox import BoundingBoxConverter
 from web.logger import logger
 from web.storage.db import get_db
 from web.storage.rabbit import channel_pool
@@ -25,7 +29,7 @@ from ...models.jobs import Jobs
 from .schemas import JobMessage
 from ...models.jobs_images import JobsImages
 
-TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%S%z'
+TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%S'
 
 
 @router.post('/upload_image', response_model=UidResponse)
@@ -79,6 +83,43 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
         return JSONResponse(content=res, status_code=200)
     else:
         return JSONResponse(content={}, status_code=200)
+
+@router.post('/get_result_report')
+async def get_result(body: ResultRequest, session: AsyncSession = Depends(get_db), ):
+    uid = body.uid
+
+    jobs_images = (await session.scalars(
+        select(JobsImages).
+        where(JobsImages.job_id == uid).
+        options(joinedload(JobsImages.image))
+    )).all()
+
+    filenames = [job.image.image_path for job in jobs_images]
+    borders = [job.image.border for job in jobs_images]
+    obj_class = [job.image.object_class for job in jobs_images]
+
+    # взять из бд data[[Name	Bbox	Class]]
+    # data = pd.DataFrame({
+    #     "Name": filenames,
+    #     "Bbox": borders,
+    #     "Class": obj_class
+    # })
+
+    data = pd.DataFrame({
+        "Name": ["/data/logo.png"],
+        "Bbox": ["50,50,10,10"],
+        "Class": 1
+    })
+    logger.info(data)
+    pdf = ImageReportPDF(f"/data/{uid}_report.pdf", data)
+    pdf_file = pdf.generate()
+    # Перемещаем курсор в начало буфера
+    # pdf_file.seek(0)
+
+    return FileResponse(f"/data/{uid}_report.pdf")
+    # Возвращаем PDF как ответ
+    # return StreamingResponse(pdf_file, media_type='application/pdf',
+    #                          headers={"Content-Disposition": "attachment; filename=generated.pdf"})
 
 
 async def publish_message(body: dict[str, Any]) -> None:

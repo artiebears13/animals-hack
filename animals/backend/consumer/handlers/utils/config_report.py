@@ -4,9 +4,8 @@ from pathlib import Path
 from typing import Literal
 
 ROOT = Path(os.path.abspath(__file__)).parents[2]
-DATA_PATH = ROOT / "data"
-SOURCE_PATH = ROOT / "animals"
-BACKEND_PATH = SOURCE_PATH / "backend"
+DATA_PATH = Path("/data/")
+BACKEND_PATH = Path("/app/")
 
 EMAIL = "donskoi.ae@gmail.com"
 DATE_FORMAT = "%Y.%m.%d %H:%M:%S"
@@ -23,4 +22,3 @@ class Logo:
 class Font:
     NAME: str = "DejaVuSans"
     PATH: Path = DATA_PATH / "DejaVuSans.ttf"
-
