@@ -10,7 +10,6 @@ from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
 from web.api.tech.router import router as tech_router
 from web.api.v1.router import router as v1_router
-from web.api.v2.router import router as v2_router
 from web.config.settings import settings
 from web.logger import LOGGING_CONFIG, logger
 from web.metrics import http_prometheus_middleware
@@ -37,8 +36,7 @@ def setup_middleware(app: FastAPI) -> None:
 
 
 def setup_routers(app: FastAPI) -> None:
-    app.include_router(v1_router, prefix="/api/v1") # затестить
-    app.include_router(v2_router, prefix="/api/v2")
+    app.include_router(v1_router, prefix="/api/v1")  # затестить
     app.include_router(tech_router, prefix="/api/tech")
 
 
