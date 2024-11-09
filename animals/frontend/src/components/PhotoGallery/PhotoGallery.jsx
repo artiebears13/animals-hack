@@ -5,6 +5,7 @@ import './PhotoGallery.css';
 import {useNavigate} from "react-router-dom";
 import {DownloadPdfButton} from "../DownloadPdfButton/DownloadPdfButton";
 import ServerErrorToast from "../serverErrorToast/ServerErrorToast";
+import {StatsContainer} from "../StatsContainer/StatsContainer";
 
 export const PhotoGallery = () => {
     const navigate = useNavigate();
@@ -83,9 +84,9 @@ export const PhotoGallery = () => {
                 case 'name-desc':
                     return b.filename.toLowerCase().localeCompare(a.filename.toLowerCase());
                 case 'date-asc':
-                    return new Date(Number(a.created_at)) - new Date(Number(b.created_at));
+                    return new Date(a.created_at) - new Date(b.created_at);
                 case 'date-desc':
-                    return new Date(Number(b.created_at)) - new Date(Number(a.created_at));
+                    return new Date(b.created_at) - new Date(a.created_at);
                 default:
                     return a.filename.toLowerCase().localeCompare(b.filename.toLowerCase());
             }
@@ -151,10 +152,11 @@ export const PhotoGallery = () => {
             <DownloadPdfButton />
             </div>
             <div className="photo-gallery">
-                <h1 className="results-header">Галерея</h1>
                 {/* Элементы управления сортировкой и фильтрацией */}
                 <div className="controls">
                     {/* Выпадающий список для сортировки */}
+                    <StatsContainer buttonClassName={"btn class-select sort-button"}/>
+
                     <select
                         className="btn class-select sort-button"
                         value={sortOption}
@@ -224,7 +226,7 @@ export const PhotoGallery = () => {
                                                 <h2><code>{photo.filename}</code></h2>
                                             </div>
                                             <div className="photo-description-created-time">
-                                                Дата: {new Date(Number(photo.created_at)).toLocaleString('ru-RU', {
+                                                Дата: {new Date(photo.created_at).toLocaleString('ru-RU', {
                                                 hour12: false,
                                                 year: 'numeric',
                                                 month: '2-digit',
