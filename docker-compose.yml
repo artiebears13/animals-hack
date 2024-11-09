@@ -24,7 +24,7 @@ services:
       test: curl --fail http://0.0.0.0:8001/api/tech/liveness || exit 1
       interval: 1s
       timeout: 1s
-      retries: 5
+      retries: 10
 
   rabbitmq:
     container_name: rabbitmq

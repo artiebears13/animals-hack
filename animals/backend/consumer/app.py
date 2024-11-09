@@ -2,14 +2,16 @@ import asyncio
 import logging.config
 
 import msgpack
+
 from consumer.config.settings import settings
-from consumer.handlers.handler import search_duplicate
+from consumer.handlers.handler import process_images
+
 from consumer.logger import LOGGING_CONFIG, context_correlation_id, logger
 from consumer.storage.rabbit import channel_pool
 
 CALLBACK_MAPPING = {
-    "front_link": search_duplicate,
-    "front_file": search_duplicate,
+    "front_link": process_images,
+    "front_file": process_images,
 
 }
 
@@ -42,6 +44,6 @@ async def start_consumer():
                     parsed_message = msgpack.unpackb(message.body)
                     logger.info("Parsed message: %s", parsed_message)
 
-                    callback = CALLBACK_MAPPING[parsed_message["body"]["type"]]
+                    callback = process_images  # CALLBACK_MAPPING[parsed_message["body"]]
 
                     _ = asyncio.create_task(callback(parsed_message))

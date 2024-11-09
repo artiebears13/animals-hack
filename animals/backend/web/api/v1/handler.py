@@ -1,112 +1,125 @@
 import contextlib
+from datetime import datetime
 from typing import Any
 from uuid import uuid4
-
+import pandas as pd
 import msgpack
 import sqlalchemy
 from aio_pika import Message
 from aio_pika.abc import DeliveryMode, ExchangeType
-from fastapi import Depends, HTTPException, File, Form, UploadFile
-from sqlalchemy import select
+from fastapi import Depends
+from sqlalchemy import select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.responses import JSONResponse
+from sqlalchemy.orm import joinedload
+from fastapi.responses import StreamingResponse
+from starlette.responses import JSONResponse, FileResponse
 from starlette_context import context
 from starlette_context.errors import ContextDoesNotExistError
-from web.config.settings import settings
+
+from consumer.handlers.utils.reports import ImageReportPDF
+from consumer.handlers.utils.bbox import BoundingBoxConverter
 from web.logger import logger
-from web.storage.db import Jobs, get_db
+from web.storage.db import get_db
 from web.storage.rabbit import channel_pool
-from typing import List, Dict
-from pydantic import BaseModel
-from pathlib import Path
 
 from .router import router
+from web.config.settings import settings
+from .schemas import *
+from ...models.jobs import Jobs
+from .schemas import JobMessage
+from ...models.jobs_images import JobsImages
+
+TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%S'
 
 
-class ImageData(BaseModel):
-    file: UploadFile
-    camera: str
-    created_at: int
-
-# class FormData(BaseModel):
-#     count: int
-#     images: List[ImageData]
-#     confidence_level: int
-#     size_threshold: int
-
-class SizeThreshold(BaseModel):
-    width: int
-    height: int
-
-UPLOAD_DIR = Path("uploaded_files")
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-
-@router.post("/upload")
-async def upload_files(
-    confidence_level: str = Form(...),  # Accept confidence level
-    size_threshold: str = Form(...),    # Accept size threshold
-    images: List[UploadFile] = Form(...),  # Accept files
-    camera: List[str] = Form(...),  # Accept cameras info (as list of strings)
-    created_at: List[int] = Form(...),  # Accept cameras info (as list of strings)
-):
-    # Loop through each uploaded file
-    for idx, file in enumerate(images):
-        camera_info = camera[idx]
-        created_at_value = created_at[idx]
-
-        # Read the file content (binary data)
-        contents = await file.read()
-
-        # Define the file path where the file will be saved
-        file_path = UPLOAD_DIR / f"{file.filename}"
-
-        # Save the file to the defined directory
-        with open(file_path, "wb") as f:
-            f.write(contents)
-
-        # Process the file and its metadata
-        logger.info(f"Processing file: {file.filename}")
-        logger.info(f"Camera: {camera_info=}")
-        logger.info(f"Camera: {created_at=}")
-        logger.info(f"Created at: {created_at_value=}")
-        print(f"File saved at: {file_path}")
-
-    return {"message": "Files uploaded and saved successfully!"}
-
-
-@router.post("/upload_image")
-async def upload_link(session: AsyncSession = Depends(get_db),):
+@router.post('/upload_image', response_model=UidResponse)
+async def upload_link(session: AsyncSession = Depends(get_db), ):
     current_id = str(uuid4())
-    db_job = Jobs(uid=current_id, is_processed=False)
+    db_job = Jobs(uid=current_id)
     session.add(db_job)
     await session.commit()
+    msg: JobMessage = {
+        "uid": current_id,
+        "body":
+            {"data":
+                 {"filenames": ["/data/logo.png"],
+                  "datetimes": [
+                      datetime(year=2020, month=1, day=1, hour=12, minute=59, second=1).strftime(TIME_FORMAT)],
+                  "confidence_lvl": 0.8
+                  }
 
-    await publish_message({"uid": current_id,
-                           "body": "TEST"
-                           })
+             }
+    }
+    await publish_message(msg)
 
     return JSONResponse({"uid": current_id}, status_code=200)
 
 
 @router.post("/get-result")
-async def get_result(body, session: AsyncSession = Depends(get_db),):
+async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db), ):
     uid = body.uid
 
+    jobs_images = (await session.scalars(
+            select(JobsImages).
+            where(JobsImages.job_id == uid).
+            options(joinedload(JobsImages.image))
+        )).all()
+
+    result = {"result": [{"status": job.status, "image_id": job.image_id, "border": job.image.border} for job in jobs_images]}
+    return JSONResponse(result)
     job = await session.scalars(select(Jobs).filter_by(uid=uid))
     try:
         row = job.one()
     except sqlalchemy.exc.NoResultFound:
         raise HTTPException(status_code=400, detail="Wrong uid")
 
-    session.refresh(row) # noqa
+    session.refresh(row)  # noqa
 
     if row.is_processed:
+        processed_images_borders = row.result
         res = {
-            "result": "TEST_RESULT"
+            "result": processed_images_borders
         }
         return JSONResponse(content=res, status_code=200)
     else:
         return JSONResponse(content={}, status_code=200)
+
+@router.post('/get_result_report')
+async def get_result(body: ResultRequest, session: AsyncSession = Depends(get_db), ):
+    uid = body.uid
+
+    jobs_images = (await session.scalars(
+        select(JobsImages).
+        where(JobsImages.job_id == uid).
+        options(joinedload(JobsImages.image))
+    )).all()
+
+    filenames = [job.image.image_path for job in jobs_images]
+    borders = [job.image.border for job in jobs_images]
+    obj_class = [job.image.object_class for job in jobs_images]
+
+    # взять из бд data[[Name	Bbox	Class]]
+    # data = pd.DataFrame({
+    #     "Name": filenames,
+    #     "Bbox": borders,
+    #     "Class": obj_class
+    # })
+
+    data = pd.DataFrame({
+        "Name": ["/data/logo.png"],
+        "Bbox": ["50,50,10,10"],
+        "Class": 1
+    })
+    logger.info(data)
+    pdf = ImageReportPDF(f"/data/{uid}_report.pdf", data)
+    pdf_file = pdf.generate()
+    # Перемещаем курсор в начало буфера
+    # pdf_file.seek(0)
+
+    return FileResponse(f"/data/{uid}_report.pdf")
+    # Возвращаем PDF как ответ
+    # return StreamingResponse(pdf_file, media_type='application/pdf',
+    #                          headers={"Content-Disposition": "attachment; filename=generated.pdf"})
 
 
 async def publish_message(body: dict[str, Any]) -> None:

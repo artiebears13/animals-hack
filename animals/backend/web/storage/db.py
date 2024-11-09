@@ -1,24 +1,11 @@
 from uuid import uuid4
 
 from asyncpg import Connection
-from sqlalchemy import AsyncAdaptedQueuePool, Boolean, Column, String
+from sqlalchemy import AsyncAdaptedQueuePool
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import declarative_base
 from typing_extensions import AsyncGenerator
 from web.config.settings import settings
-
-Base = declarative_base()
-
-
-class Jobs(Base):
-    __tablename__ = "jobs"
-
-    uid = Column(String, primary_key=True)
-
-    is_processed = Column(Boolean)
-
-    is_duplicate = Column(Boolean)
-    duplicate_link = Column(String)
+from ..models.meta import Base
 
 
 class CConnection(Connection):
