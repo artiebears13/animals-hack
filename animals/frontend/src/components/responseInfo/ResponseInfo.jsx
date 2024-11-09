@@ -5,14 +5,16 @@ import { FilesContext } from '../../contexts/FilesContext';
 import Toast from 'react-bootstrap/Toast';
 import ToastContainer from 'react-bootstrap/ToastContainer';
 
-const ResponseInfo = () => {
+const ResponseInfo = ({closeCallback}) => {
     const { showToast, setShowToast, responseMessage } = useContext(FilesContext);
 
     const onClose = () => {
         setShowToast(false);
+        closeCallback();
     };
 
     if (!showToast || !responseMessage) return null;
+    setTimeout(onClose, 3000);
 
     return (
         <ToastContainer position="top-end" className="p-3">

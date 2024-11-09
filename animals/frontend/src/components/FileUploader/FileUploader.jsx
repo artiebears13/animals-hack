@@ -6,7 +6,7 @@ import Popover from 'react-bootstrap/Popover';
 import { FilesContext } from '../../contexts/FilesContext';
 import './FileUploader.css';
 import PhotoPreview from "../photoPreview/PhotoPreview";
-import {SizeInput} from "../SizeInput/SizeInput";
+import { SizeInput } from "../SizeInput/SizeInput";
 
 const FileUploader = () => {
     const {
@@ -34,19 +34,11 @@ const FileUploader = () => {
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
     const inputAreaClick = (e) => {
-        // // e.preventDefault();
-        // console.log(e.target.id);
-        // if ((e.target.id ==="import-area")  && inputAreaRef.current) {
-        //     console.log("inputAreaClick");
-        //     inputAreaRef.current.click();
-        // }
+        // Можно реализовать дополнительные действия при клике на область ввода, если нужно
     }
-
-
 
     // Обработчик клика для выбора файлов
     const handleFileButtonClick = (e) => {
-
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
@@ -74,6 +66,7 @@ const FileUploader = () => {
         e.currentTarget.classList.remove('drag-over');
     };
 
+    // Обновленная функция handleDrop для сбора пути к файлам
     const handleDrop = async (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -85,7 +78,7 @@ const FileUploader = () => {
         for (let i = 0; i < items.length; i++) {
             const item = items[i].webkitGetAsEntry();
             if (item) {
-                await traverseFileTree(item, droppedFiles);
+                await traverseFileTree(item, '', droppedFiles); // Начальный путь пустой
             }
         }
 
@@ -96,11 +89,16 @@ const FileUploader = () => {
         e.dataTransfer.clearData();
     };
 
-    const traverseFileTree = (item, fileList) => {
+    // Обновленная функция traverseFileTree для сбора пути к файлам
+    const traverseFileTree = (item, path, fileList) => {
+        console.log("parse tree");
         return new Promise((resolve) => {
             if (item.isFile) {
                 item.file((file) => {
-                    fileList.push(file);
+                    fileList.push({
+                        file: file,
+                        camera: path || 'root', // Если путь пустой, устанавливаем 'root'
+                    });
                     resolve();
                 });
             } else if (item.isDirectory) {
@@ -108,7 +106,8 @@ const FileUploader = () => {
                 dirReader.readEntries((entries) => {
                     const promises = [];
                     for (let i = 0; i < entries.length; i++) {
-                        promises.push(traverseFileTree(entries[i], fileList));
+                        // Обновляем путь, добавляя текущую папку
+                        promises.push(traverseFileTree(entries[i], path ? `${path}/${item.name}` : item.name, fileList));
                     }
                     Promise.all(promises).then(() => resolve());
                 });
@@ -119,20 +118,25 @@ const FileUploader = () => {
     };
 
     const handleFileChange = (e) => {
+        console.log(e);
         if (e.target.files && e.target.files.length > 0) {
-            const selectedFiles = Array.from(e.target.files);
+            const selectedFiles = Array.from(e.target.files).map(file => ({
+                file: file,
+                camera: file.webkitRelativePath.split("/").slice(-2, -1)[0] || "Не опознано",
+            }));
             handleFiles(selectedFiles);
             e.target.value = null;
         }
     };
 
+    // Обновленная функция handleFiles для обработки объектов {file, camera}
     const handleFiles = (selectedFiles) => {
         const validFiles = [];
         const invalidFiles = [];
 
-        selectedFiles.forEach((file) => {
+        selectedFiles.forEach(({ file, camera }) => {
             if (checkFileFormat(file)) {
-                validFiles.push(file);
+                validFiles.push({ file, camera });
             } else {
                 invalidFiles.push(file.name);
             }
@@ -255,12 +259,11 @@ const FileUploader = () => {
                     directory="" // Для некоторых браузеров
                 />
                 {/* Добавьте кнопки для выбора файлов и папок */}
-                <div style={{ marginTop: '10px' }}>
+                <div className="input-file-buttons-container" style={{ marginTop: '10px' }}>
                     <button
                         type="button"
                         className="btn btn-secondary"
                         onClick={(e) => handleFileButtonClick(e)}
-                        style={{ marginRight: '10px' }}
                     >
                         Выбрать файлы
                     </button>
@@ -336,7 +339,7 @@ const FileUploader = () => {
 
             <div className="uploaded-file__container" style={{ marginTop: '20px' }}>
                 {files.length > 0 &&
-                    files.map((file, index) => (
+                    files.map(({ file, camera }, index) => (
                         <div
                             key={index}
                             className={`uploaded-file__item ${
@@ -344,7 +347,7 @@ const FileUploader = () => {
                             }`}
                         >
                             {checkFileFormat(file) ? (
-                                <PhotoPreview file={file}/>
+                                <PhotoPreview file={file} camera={camera} />
                             ) : (
                                 <OverlayTrigger
                                     trigger={['hover', 'focus']}
@@ -358,7 +361,7 @@ const FileUploader = () => {
                                 className="btn uploaded-file__button"
                                 onClick={() => deleteFile(index)}
                             >
-                                &times;
+                             <span className="times-symbol">&times;</span>
                             </button>
                         </div>
                     ))}

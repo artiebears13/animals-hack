@@ -1,13 +1,24 @@
 // src/pages/MainPage.js
 
-import React, { useContext, useEffect } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { FilesContext } from '../../contexts/FilesContext';
 import ServerErrorToast from "../../components/serverErrorToast/ServerErrorToast";
 import ResponseInfo from "../../components/responseInfo/ResponseInfo";
 import FileUploader from "../../components/FileUploader/FileUploader";
+import {useNavigate} from "react-router-dom";
 
-const MainPage = ( {setCurrentPage} ) => {
-    const { loading, error, processedFiles } = useContext(FilesContext);
+const MainPage = ( ) => {
+    const navigate = useNavigate();
+    const { loading, error, processedFiles, getResponse, setGetResponse } = useContext(FilesContext);
+    const [responseInfo, setResponseInfo] = useState(false);
+
+    useEffect(() => {
+        if (getResponse){
+            setGetResponse(false);
+            setResponseInfo(true);
+            navigate('/result');
+        }
+    }, [getResponse]);
 
     return (
         <div className="main-page">
@@ -29,14 +40,14 @@ const MainPage = ( {setCurrentPage} ) => {
 
                 <FileUploader />
 
-                <ResponseInfo />
+                {responseInfo && <ResponseInfo closeCallback={setGetResponse} />}
                 {error && <ServerErrorToast />}
                 {loading && (
                     <div className="big-center loader"></div>
                 )}
                 {
                     processedFiles && processedFiles.length > 0 && (
-                        <button className="btn btn-secondary btn-to_results" onClick={() => setCurrentPage('result')}>
+                        <button className="btn btn-secondary btn-to_results" onClick={() => navigate('/result')}>
                             Отчет
                         </button>
                     )

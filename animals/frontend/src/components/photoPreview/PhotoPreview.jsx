@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 
 const PhotoPreview = ({ file }) => {
     const [preview, setPreview] = useState("");
-    const [hover, setHover] = useState(false);
 
     useEffect(() => {
         if (!file) {
@@ -24,8 +23,6 @@ const PhotoPreview = ({ file }) => {
 
     return (
         <div className="photo-preview-container" style={{ marginTop: '20px' }}
-            onMouseEnter={() => setHover(true)}
-             onMouseLeave={() => setHover(false)}
 
         >
             <img

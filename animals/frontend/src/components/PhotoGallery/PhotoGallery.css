@@ -1,36 +1,69 @@
-.photo-gallery{
+.photo-gallery {
     margin-top: 25px;
     width: 100%;
 }
 
-.controls{
+.controls {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 10px; /* Увеличен отступ для кнопки "Фильтры" */
 }
-.sort-button{
+
+.sort-button {
     background-color: #2d3034;
+    color: #fff; /* Добавлен цвет текста для лучшей читаемости */
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
     opacity: 0.8;
+    transition: opacity 0.3s ease;
 }
-.sort-button:hover{
+
+.sort-button:hover {
     background-color: #2d3034;
     opacity: 1;
 }
 
-.class-select{
-    background-color: #2d3034;
-}
-.class-select:focus{
-    background-color: #2d3034;
+.filter-button {
+    background-color: #2a2b2f; /* Цвет кнопки "Фильтры" */
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
 }
 
-.class-select > option{
-    background-color: #2d3034;
+.filter-button:hover {
+    background-color: #2a2b2f;
+    opacity: 1;
 }
-.animal-filters{
+
+.class-select {
+    background-color: #2d3034;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.class-select:focus {
+    background-color: #2d3034;
+    outline: none;
+}
+
+.class-select > option {
+    background-color: #2d3034;
+    color: #fff;
+}
+
+.animal-filters {
     background-color: #2d3034;
     padding: 5px 10px;
     border-radius: 5px;
@@ -49,7 +82,7 @@
     position: relative;
     user-select: none; /* Запрет выделения текста при клике */
     font-size: 16px;
-    gap: 5px
+    gap: 5px;
 }
 
 .animal-filters input[type="checkbox"] {
@@ -59,9 +92,7 @@
     width: 20px;
 }
 
-
-
-.animal-filters input[type="checkbox"]:checked + span::after,
+/* Исправление селекторов для чекбоксов */
 .animal-filters input[type="checkbox"]:checked + label::after {
     content: "";
     position: absolute;
@@ -84,7 +115,7 @@
     background-color: #f0f0f0;
 }
 
-.photo-gallery-content{
+.photo-gallery-content {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
@@ -94,7 +125,7 @@
     gap: 10px;
 }
 
-.no-photos-container{
+.no-photos-container {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -103,9 +134,71 @@
     gap: 5px;
 }
 
-.no-photos{
+.no-photos {
     margin-top: 20px;
     width: 100%;
     text-align: center;
     font-size: 24px;
 }
+
+.results-header {
+    width: 100%;
+    text-align: center;
+}
+
+
+/* Стили для панели фильтров */
+.filters-panel {
+    background-color: #2a2b2f;
+    color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    animation: display 0.3s ease, opacity 0.3s ease;
+    width: 500px;
+    margin: 0 auto 10px;
+}
+
+/* Стили для разделов фильтров */
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section h3 {
+    margin-bottom: 10px;
+}
+
+/* Стили для чекбоксов внутри панели фильтров */
+.filters-panel label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.filters-panel input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .sort-button,
+    .filter-button {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .filters-panel {
+        width: 100%;
+    }
+}
+
+/* -------------------------------------------------- */
+/*                 Новые Стили Конец                 */
+/* -------------------------------------------------- */

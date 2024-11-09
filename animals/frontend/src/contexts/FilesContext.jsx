@@ -20,6 +20,7 @@ export const FilesProvider = ({ children }) => {
     const [responseMessage, setResponseMessage] = useState(''); // Сообщение ответа сервера
     const [processedFiles, setProcessedFiles] = useState([]);
     const [sizeThreshold, setSizeThreshold] = useState({width: 128, height: 128});
+    const [getResponse, setGetResponse] = useState(false);
 
     const setUploadedFiles = useCallback((files) => {
         console.log("setSelectedFiles", files);
@@ -62,13 +63,15 @@ export const FilesProvider = ({ children }) => {
 
     const getFormData = (files, confidenceLevel, sizeThreshold) => {
         const formData = new FormData();
+        console.log({files});
         formData.append('count', files.length);
 
         files.forEach((file, index) => {
             console.log(file);
-            formData.append(`images[${index}][file]`, file);
+            formData.append(`images[${index}][file]`, file.file);
+            formData.append(`images[${index}][camera]`, file.camera);
 
-            formData.append(`images[${index}][created_at]`, file.lastModified);
+            formData.append(`images[${index}][created_at]`, file.file.lastModified);
         });
 
         formData.append('confidence_level', confidenceLevel);
@@ -79,16 +82,18 @@ export const FilesProvider = ({ children }) => {
 
 
     const processFiles = (images) => {
+        console.log({images, files})
         setProcessedFiles(() => {
 
             return images.map(image => {
-                const matchingFile = files.find(file => file.name === image.filename);
+                const matchingFile = files.find(file => file.file.name === image.filename);
                 return {
                     ...image, // все свойства из image
-                    file: matchingFile // добавляем свойство file с найденным файлом
+                    file: matchingFile.file // добавляем свойство file с найденным файлом
                 };
             });
         });
+        setGetResponse(true);
 
     };
 
@@ -101,6 +106,8 @@ export const FilesProvider = ({ children }) => {
             setFiles,
             setConfidenceLevel,
             confidenceLevel,
+            getResponse,
+            setGetResponse,
             responseData,
             processedFiles,
             sizeThreshold,

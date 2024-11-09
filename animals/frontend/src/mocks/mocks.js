@@ -55,16 +55,20 @@ export const uploadFileToServer = (formData) => {
 
     const count = parseInt(formData.get('count'), 10);
     console.log(`Количество файлов: ${count}`);
+    console.log(`FormData: ${formData.getAll('files')}`);
 
     const files = [];
     const createdAtArray = [];
+    const cameraArray = [];
 
     for (let i = 0; i < count; i++) {
         const fileKey = `images[${i}][file]`;
         const createdAtKey = `images[${i}][created_at]`;
+        const cameraKey = `images[${i}][camera]`;
 
         const file = formData.get(fileKey);
         const createdAt = formData.get(createdAtKey);
+        const camera = formData.get(cameraKey);
 
         if (file) {
             files.push(file);
@@ -72,6 +76,11 @@ export const uploadFileToServer = (formData) => {
                 createdAtArray.push(createdAt);
             } else {
                 createdAtArray.push(null); // Или задайте значение по умолчанию
+            }
+            if (camera) {
+                cameraArray.push(camera);
+            } else {
+                cameraArray.push(null); // Или задайте значение по умолчанию
             }
         } else {
             console.warn(`Файл для индекса ${i} не найден.`);
@@ -87,7 +96,7 @@ export const uploadFileToServer = (formData) => {
             let response = {};
             let uploadedFiles = [];
 
-            files.forEach((file) => {
+            files.forEach((file, index) => {
                 // Генерация случайного количества границ (от 1 до 5) для каждого файла
                 const numberOfBorders = getRandomInt(1, 5); // Случайное количество границ от 1 до 5
                 // const numberOfBorders = 1; // Случайное количество границ от 1 до 5
@@ -96,6 +105,7 @@ export const uploadFileToServer = (formData) => {
                 uploadedFiles.push({
                     filename: file.name,
                     created_at: file.lastModified,
+                    camera: cameraArray[index],
                     border: borders, // Добавляем массив случайно сгенерированных границ
                 });
             });
@@ -105,8 +115,8 @@ export const uploadFileToServer = (formData) => {
                 error_message: '',
                 images: uploadedFiles
             };
+            console.log("response", response);
             resolve(response);
-            console.log("resolved");
         }, 3000); // 3 секунды задержки
     });
 };
