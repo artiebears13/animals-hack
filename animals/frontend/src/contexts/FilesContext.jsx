@@ -22,6 +22,7 @@ export const FilesProvider = ({ children }) => {
     const [sizeThreshold, setSizeThreshold] = useState({width: 128, height: 128});
     const [getResponse, setGetResponse] = useState(false);
     const [jobId, setJobId] = useState("");
+    const [stats, setStats] = useState({});
 
     const setUploadedFiles = useCallback((files) => {
         setFiles(files);
@@ -75,7 +76,8 @@ export const FilesProvider = ({ children }) => {
             const res = await retryDownload(uid);
             if (Object.keys(res).length > 0) {
                 // Если ответ не пустой, обрабатываем файлы
-                processFiles(res.images);  // Предполагается, что res.images содержит массив или информацию о загруженных файлах
+                processFiles(res.images);
+                processStats(res.stats);
                 setResponseMessage(`Файл(ы) успешно загружен(ы).`);
                 setShowToast(true);
             } else {
@@ -128,6 +130,12 @@ export const FilesProvider = ({ children }) => {
 
     };
 
+    const processStats = (stats) => {
+        if (stats && stats !== {}) {
+            setStats(stats);
+        }
+    }
+
 
 
 
@@ -152,7 +160,8 @@ export const FilesProvider = ({ children }) => {
             setError,
             showToast,
             setShowToast,
-            responseMessage
+            responseMessage,
+            stats, setStats
         }}>
             {children}
         </FilesContext.Provider>

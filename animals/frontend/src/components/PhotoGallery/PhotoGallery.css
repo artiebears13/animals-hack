@@ -193,6 +193,10 @@
     transform: scale(1.2);
     cursor: pointer;
 }
+.btn.class-select.sort-button:focus:not(:focus-visible) {
+    outline: 0;
+    background-color: transparent;
+}
 
 /* Адаптивность для мобильных устройств */
 @media (max-width: 768px) {
@@ -281,6 +285,7 @@
 .results-header-container{
     position: relative;
     width: 100%;
+
 }
 .download-button-container{
     margin-top: 20px;

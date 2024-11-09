@@ -5,6 +5,7 @@ import './PhotoGallery.css';
 import {useNavigate} from "react-router-dom";
 import {DownloadPdfButton} from "../DownloadPdfButton/DownloadPdfButton";
 import ServerErrorToast from "../serverErrorToast/ServerErrorToast";
+import {StatsContainer} from "../StatsContainer/StatsContainer";
 
 export const PhotoGallery = () => {
     const navigate = useNavigate();
@@ -151,10 +152,11 @@ export const PhotoGallery = () => {
             <DownloadPdfButton />
             </div>
             <div className="photo-gallery">
-                <h1 className="results-header">Галерея</h1>
                 {/* Элементы управления сортировкой и фильтрацией */}
                 <div className="controls">
                     {/* Выпадающий список для сортировки */}
+                    <StatsContainer buttonClassName={"btn class-select sort-button"}/>
+
                     <select
                         className="btn class-select sort-button"
                         value={sortOption}
