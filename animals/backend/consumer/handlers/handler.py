@@ -47,7 +47,7 @@ async def process_images(message: JobMessage) -> None:
             await session.execute(
                 update(Images).
                 where(Images.id == image_id).
-                values(border=[1, 2, 3, 4], object_class=1)
+                values(border=[100, 200, 100, 200], object_class=1)
             )
 
         await session.commit()
