@@ -12,15 +12,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 from starlette_context import context
 from starlette_context.errors import ContextDoesNotExistError
-from web.config.settings import settings
 from web.logger import logger
-from web.storage.db import Jobs, get_db
+from web.storage.db import get_db
 from web.storage.rabbit import channel_pool
 
 from .router import router
+from web.config.settings import settings
+from .schemas import *
 
 
-@router.post("/upload_image")
+@router.post('/upload_image', response_model=UidResponse)
 async def upload_link(session: AsyncSession = Depends(get_db),):
     current_id = str(uuid4())
     db_job = Jobs(uid=current_id, is_processed=False)

@@ -43,6 +43,11 @@ class AnimalsImage(BaseModel):
             raise ValueError(f"Файл должен иметь одно из расширений: {', '.join(allowed_extensions)}")
         return value
 
+
+class UidResponse(BaseModel):
+    uid: str
+
+
 class BodyData(BaseModel):
     filename: str
     datetime: datetime

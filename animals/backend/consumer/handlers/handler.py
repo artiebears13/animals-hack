@@ -1,10 +1,10 @@
-import asyncio
-from datetime import datetime
-
 from consumer.logger import logger
-from sqlalchemy import select, insert
-from web.storage.db import Jobs, Images, async_session
+from sqlalchemy import select
+from web.models.jobs import Jobs
+from web.models.images import Images
+from web.storage.db import async_session
 from web.api.v1.schemas import JobMessage
+
 
 async def process_images(message: JobMessage) -> None:
     image_path = message.body.data.filename
