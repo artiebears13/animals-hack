@@ -44,9 +44,9 @@ DIRECTORY = "data/raw"
              tags=["API для загрузки фото животных видео на Фронтенд-Сервере"],
              summary="Загрузить несколько изображений животных")
 async def upload_images(body: AnimalsImageResponse = Depends(),
-                        files: List[UploadFile] = File(...),
+                        images: List[UploadFile] = File(...),
                         created_at: List[str] = Form(...),
-                        cameras: List[str] = Form(...),
+                        camera: List[str] = Form(...),
                         session: AsyncSession = Depends(get_db)):
     current_id = str(uuid4())
     db_job = Jobs(uid=current_id)
@@ -59,7 +59,7 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
     created_at_time = []
     valid_camera = []
 
-    image_info = zip(files, cameras, created_at)
+    image_info = zip(images, camera, created_at)
     for index, (file, camera, created_at) in enumerate(image_info):
         if file.content_type not in ALLOWED_CONTENT_TYPES:
             logger.warning(f"Недопустимый тип файла: {file.filename} ({file.content_type})")
@@ -107,8 +107,8 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
     result = {
         # "result": [{"status": job.status, "image_id": job.image_id, "border": job.image.border,
         # "filename": job.image.image_path} for job in jobs_images]}
-
-        "result": [{"filename": "ali.png", "created_at": job.image.datetime, "camera": job.image.camera,
+        "error_message": "",
+        "images": [{"filename": "artmed.jpg", "created_at": f"{job.image.datetime}", "camera": job.image.camera,
                     # "result": [{"filename": job.image.image_path, "created_at": job.image.datetime, "camera": job.image.camera,
                     "border":
                         [{"id": hash(job.image.image_path),

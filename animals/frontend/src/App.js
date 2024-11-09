@@ -1,39 +1,33 @@
 import './App.css';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header';
 import './index.css';
+import { FilesProvider } from './contexts/FilesContext';
+import { PhotoGallery } from "./components/PhotoGallery/PhotoGallery";
 import MainPage from "./pages/MainPage/MainPage";
 import InfoPage from "./pages/InfoPage/InfoPage";
 import { Footer } from "./components/Footer/Footer";
-import { FilesProvider } from './contexts/FilesContext';
-import {PhotoGallery} from "./components/PhotoGallery/PhotoGallery"; // Убедитесь, что путь правильный
+import ServerErrorToast from "./components/serverErrorToast/ServerErrorToast";
 
 const App = () => {
-  const [currentPage, setCurrentPage] = useState('main');
+    return (
+        <FilesProvider>
 
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'main':
-        return <MainPage setCurrentPage={setCurrentPage} />;
-      case 'info':
-        return <InfoPage />;
-      case 'result':
-        return <PhotoGallery setCurrentPage={setCurrentPage}/>;
-      default:
-        return <MainPage setCurrentPage={setCurrentPage} />;
-    }
-  };
-
-  return (
-      <FilesProvider>
-        <div className="App">
-          <Header currentPage={currentPage} setCurrentPage={setCurrentPage}/>
-          {renderPage()}
-          <Footer />
-        </div>
-      </FilesProvider>
-  );
+            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                <div className="App">
+                    <Header />
+                    <Routes>
+                        <Route path="/" element={<MainPage />} />
+                        <Route path="/info" element={<InfoPage />} />
+                        <Route path="/result" element={<PhotoGallery />} />
+                        <Route path="*" element={<MainPage />} />
+                    </Routes>
+                    <Footer />
+                </div>
+            </Router>
+        </FilesProvider>
+    );
 };
 
 export default App;
