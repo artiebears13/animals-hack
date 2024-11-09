@@ -6,6 +6,11 @@ FRONTEND_PORT ?= 3000
 FILE_ID="1KcbPfoQGxSi9Dz9SorR6ZoVuUtAGO8nB"
 
 
+## Copy .env example files
+copy-env-files:
+	cp animals/backend/consumer/config/.env.example animals/backend/consumer/config/.env
+	cp animals/backend/web/config/.env.example animals/backend/web/config/.env
+
 ## Load model weights
 load-weights:
 	pip install --no-cache-dir gdown
