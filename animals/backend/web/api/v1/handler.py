@@ -66,15 +66,15 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
         if file.content_type not in ALLOWED_CONTENT_TYPES:
             logger.warning(f"Недопустимый тип файла: {file.filename} ({file.content_type})")
         try:
-            path = os.path.join(DIRECTORY, f"{file.filename}")
+            path = os.path.join(DIRECTORY, f"{current_id}_hash_{file.filename}")
             # Асинхронно считываем содержимое файла
             with open(path, "wb+") as file_object:
                 file_object.write(file.file.read())
-            uploaded_files_name.append(f"{file.filename}")
+            uploaded_files_name.append(f"{current_id}_hash_{file.filename}")
             created_at_time.append(created_at)
             valid_camera.append(camera)
         except Exception as e:
-            logger.error(f"Ошибка при чтении и сохранении файла {file.filename}: {e}")
+            logger.error(f"Ошибка при чтении и сохранении файла {current_id}_hash_{file.filename}: {e}")
             continue
 
     msg: JobMessage = {
@@ -111,7 +111,7 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
         # "result": [{"status": job.status, "image_id": job.image_id, "border": job.image.border,
         # "filename": job.image.image_path} for job in jobs_images]}
         "error_message": "",
-        "images": [{"filename": str(job.image.image_path).split("/")[-1], "created_at": f"{job.image.datetime}", "camera": job.image.camera,
+        "images": [{"filename": str(job.image.image_path).split("/")[-1].split("_hash_")[-1], "created_at": f"{job.image.datetime}", "camera": job.image.camera,
                     # "result": [{"filename": job.image.image_path, "created_at": job.image.datetime, "camera": job.image.camera,
                     "border":
                         [{"id": hash(job.image.image_path),
