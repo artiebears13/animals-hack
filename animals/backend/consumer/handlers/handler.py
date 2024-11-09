@@ -1,5 +1,4 @@
-from sqlalchemy import insert, update, select
-from sqlalchemy.orm import joinedload
+import os.path
 
 from sqlalchemy import insert, update
 
@@ -40,32 +39,41 @@ async def process_images(message: JobMessage) -> None:
         #######################
 
         for index, image_id in enumerate(image_ids):
-            await session.execute(
-                update(JobsImages).
-                where(JobsImages.job_id == message["uid"], JobsImages.image_id == image_id).
-                values(status=True)
-            )
 
+            logger.info(f"{image_pathes=}")
+            logger.info(f"{image_pathes[index]=}")
             # orders = await asyncio.to_thread(call_triton, image_pathes[index])
-            orders = call_triton(image_pathes[index])
+            orders = call_triton(os.path.join('/data/raw', image_pathes[index]))
             logger.info(f"{orders=}")
             for order in orders:
                 logger.info(f"{order=}")
                 left, top, right, bottom = order["xyxy"]
                 order["xyxy"] = [left, top, right - left, bottom - top]
+                if order["conf"] >= 0.92:
+                    order["conf"] = 1
+                else:
+                    order["conf"] = 0
+                logger.info(f'{order["xyxy"]}, {order["conf"]}')
 
             await session.execute(
                 update(Images).
                 where(Images.id == image_id).
                 # values(border=, object_class=orders['cls'])
                 values([
-                    {"border": order["xyxy"], "object_class": order["cls"]}
-                    for order in orders
+                    # {"border": order["xyxy"], "object_class": order["conf"]}
+                    {"border": [100, 200, 300, 100], "object_class": 0}
+                    # for order in orders
                 ])
 
             )
 
-        await session.commit()
+            await session.execute(
+                update(JobsImages).
+                where(JobsImages.job_id == message["uid"], JobsImages.image_id == image_id).
+                values(status=True)
+            )
+
+            await session.commit()
         # await session.execute(
         #     update(Images).
         #     where(Images.id == example_id).
