@@ -48,17 +48,16 @@ class UidResponse(BaseModel):
     uid: str
 
 
-class BodyData(BaseModel):
-    filename: str
-    datetime: datetime
+class BodyData(TypedDict):
+    filenames: list[str]
+    datetimes: list[str]
     confidence_lvl: float
 
 
-class MessageBody(BaseModel):
-    type: str
+class MessageBody(TypedDict):
     data: BodyData
 
 
-class JobMessage(BaseModel):
+class JobMessage(TypedDict):
     uid: str
     body: MessageBody

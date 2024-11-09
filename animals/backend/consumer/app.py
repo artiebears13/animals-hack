@@ -44,6 +44,6 @@ async def start_consumer():
                     parsed_message = msgpack.unpackb(message.body)
                     logger.info("Parsed message: %s", parsed_message)
 
-                    callback = CALLBACK_MAPPING[parsed_message["body"]["type"]]
+                    callback = process_images  # CALLBACK_MAPPING[parsed_message["body"]]
 
                     _ = asyncio.create_task(callback(parsed_message))
