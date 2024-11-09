@@ -1,10 +1,12 @@
+import asyncio
+
 from sqlalchemy import insert, update
+
+from consumer.handlers.utils import call_triton
 from web.api.v1.schemas import JobMessage
-from web.logger import logger
 from web.models.images import Images
 from web.models.jobs_images import JobsImages
 from web.storage.db import async_session
-from datetime import datetime
 
 
 async def process_images(message: JobMessage) -> None:
@@ -31,16 +33,34 @@ async def process_images(message: JobMessage) -> None:
             for image_id in image_ids
         ]))
 
+        #######################
+        # do smth with pictures here
+        #######################
+
+        for index, image_id in enumerate(image_ids):
+            await session.execute(
+                update(JobsImages).
+                where(JobsImages.job_id == message["uid"], JobsImages.image_id == image_id).
+                values(status=True)
+            )
+
+            orders = await asyncio.to_thread(call_triton, image_pathes[index])
+            for order in orders:
+                left, top, right, bottom = order["xyxy"]
+                order["xyxy"] = [left, top, right - left, bottom - top]
+
+            await session.execute(
+                update(Images).
+                where(Images.id == image_id).
+                # values(border=, object_class=orders['cls'])
+                values([
+                    {"border": order["xyxy"], "object_class": order["cls"]}
+                    for order in orders
+                ])
+
+            )
+
         await session.commit()
-
-        example_id = image_ids[0]
-
-        await session.execute(
-            update(JobsImages).
-            where(JobsImages.job_id == message["uid"], JobsImages.image_id == example_id).
-            values(status=True)
-        )
-
         # await session.execute(
         #     update(Images).
         #     where(Images.id == example_id).

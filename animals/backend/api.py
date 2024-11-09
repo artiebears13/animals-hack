@@ -4,7 +4,6 @@ from PIL import Image
 from ultralytics import YOLO
 import torch
 import numpy as np
-from animals.backend.config import DATA_PATH
 
 
 
@@ -79,7 +78,7 @@ def prepare_image(image_path):
     return image_array, size
 
 
-def call_triton(image_path: str = f"{DATA_PATH}/train_data_minprirodi/images/1011727.jpg") -> list[dict]:
+def call_triton(image_path: str = f"cat.jpg") -> list[dict]:
     image: np.ndarray = plt.imread(image_path)  # (h, w, c)
     images = MODEL(image)
     output = []
