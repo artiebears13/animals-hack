@@ -84,9 +84,9 @@ export const PhotoGallery = () => {
                 case 'name-desc':
                     return b.filename.toLowerCase().localeCompare(a.filename.toLowerCase());
                 case 'date-asc':
-                    return new Date(Number(a.created_at)) - new Date(Number(b.created_at));
+                    return new Date(a.created_at) - new Date(b.created_at);
                 case 'date-desc':
-                    return new Date(Number(b.created_at)) - new Date(Number(a.created_at));
+                    return new Date(b.created_at) - new Date(a.created_at);
                 default:
                     return a.filename.toLowerCase().localeCompare(b.filename.toLowerCase());
             }
@@ -226,7 +226,7 @@ export const PhotoGallery = () => {
                                                 <h2><code>{photo.filename}</code></h2>
                                             </div>
                                             <div className="photo-description-created-time">
-                                                Дата: {new Date(Number(photo.created_at)).toLocaleString('ru-RU', {
+                                                Дата: {new Date(photo.created_at).toLocaleString('ru-RU', {
                                                 hour12: false,
                                                 year: 'numeric',
                                                 month: '2-digit',
