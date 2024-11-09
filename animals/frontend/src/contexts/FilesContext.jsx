@@ -27,8 +27,8 @@ export const FilesProvider = ({ children }) => {
         setFiles(files);
     }, []);
 
-    const downloadResponse = async () => {
-        const res = await downloadFilesFromServer(jobId);
+    const downloadResponse = async (uid) => {
+        const res = await downloadFilesFromServer(uid);
         return res;
     }
 
@@ -36,7 +36,6 @@ export const FilesProvider = ({ children }) => {
      * Функция для загрузки файла.
      */
     const uploadFiles = async () => {
-        setJobId("");
         setLoading(true);
         setError(null);
         setShowToast(false);
@@ -45,18 +44,20 @@ export const FilesProvider = ({ children }) => {
 
         try {
             const formData = getFormData(files, confidenceLevel);
-
-            const uid = await uploadFileToServer(formData);
+            const uidObj = await uploadFileToServer(formData);
+            const uid = uidObj.uid;
             setJobId(uid);
 
-            const retryDownload = async () => {
+            const retryDownload = async (uid) => {
                 let res = {};
                 let attempts = 0;
                 const maxAttempts = 200;
 
                 // Повторять запросы, если ответ пустой, пока не превысим максимальное количество попыток
                 while (attempts < maxAttempts) {
-                    res = await downloadResponse();  // Загружаем ответ от сервера
+                    console.log({uid});
+                    console.log('type', typeof uid);
+                    res = await downloadResponse(uid);  // Загружаем ответ от сервера
 
                     if (Object.keys(res).length > 0) {
                         // Если данные есть, прекращаем попытки и возвращаем результат
@@ -71,7 +72,7 @@ export const FilesProvider = ({ children }) => {
 
                 return res;
             };
-            const res = await retryDownload();
+            const res = await retryDownload(uid);
             if (Object.keys(res).length > 0) {
                 // Если ответ не пустой, обрабатываем файлы
                 processFiles(res.images);  // Предполагается, что res.images содержит массив или информацию о загруженных файлах
@@ -134,6 +135,7 @@ export const FilesProvider = ({ children }) => {
         <FilesContext.Provider value={{
             files,
             setFiles,
+            setJobId,
             setConfidenceLevel,
             confidenceLevel,
             getResponse,

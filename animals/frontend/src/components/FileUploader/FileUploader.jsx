@@ -17,6 +17,7 @@ const FileUploader = () => {
         setConfidenceLevel,
         uploadFiles,
         setUploadedFiles,
+        setJobId,
     } = useContext(FilesContext);
 
     const [errorMessage, setErrorMessage] = useState('');
@@ -171,6 +172,7 @@ const FileUploader = () => {
     };
 
     const handleUpload = () => {
+        setJobId("");
         if (files.length === 0) {
             setErrorMessage('Пожалуйста, загрузите хотя бы один файл.');
             return;
