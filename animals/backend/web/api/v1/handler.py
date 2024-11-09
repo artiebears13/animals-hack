@@ -1,4 +1,5 @@
 import contextlib
+import datetime
 import os
 from typing import Any
 from uuid import uuid4
@@ -31,7 +32,7 @@ from ...models.jobs_images import JobsImages
 
 TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%S'
 ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png", "image/gif"]
-DIRECTORY = "data/raw"
+DIRECTORY = "/data/raw"
 
 
 # перенести в конфиг потом
@@ -48,6 +49,7 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
                         created_at: List[str] = Form(...),
                         camera: List[str] = Form(...),
                         session: AsyncSession = Depends(get_db)):
+
     current_id = str(uuid4())
     db_job = Jobs(uid=current_id)
     session.add(db_job)
@@ -68,8 +70,8 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
             # Асинхронно считываем содержимое файла
             with open(path, "wb+") as file_object:
                 file_object.write(file.file.read())
-            uploaded_files_name.append(f"{current_id}_{index}")
-            created_at_time.append(int(created_at))
+            uploaded_files_name.append(f"{current_id}_{index}.jpg")
+            created_at_time.append(created_at)
             valid_camera.append(camera)
         except Exception as e:
             logger.error(f"Ошибка при чтении и сохранении файла {file.filename}: {e}")
@@ -122,22 +124,7 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
                     } for job in jobs_images]}
 
     return JSONResponse(result)
-    job = await session.scalars(select(Jobs).filter_by(uid=uid))
-    try:
-        row = job.one()
-    except sqlalchemy.exc.NoResultFound:
-        raise HTTPException(status_code=400, detail="Wrong uid")
 
-    session.refresh(row)  # noqa
-
-    if row.is_processed:
-        processed_images_borders = row.result
-        res = {
-            "result": processed_images_borders
-        }
-        return JSONResponse(content=res, status_code=200)
-    else:
-        return JSONResponse(content={}, status_code=200)
 
 @router.post('/get_result_report')
 async def get_result(body: ResultRequest, session: AsyncSession = Depends(get_db), ):

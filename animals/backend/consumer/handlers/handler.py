@@ -4,6 +4,7 @@ from web.logger import logger
 from web.models.images import Images
 from web.models.jobs_images import JobsImages
 from web.storage.db import async_session
+from datetime import datetime
 
 
 async def process_images(message: JobMessage) -> None:
@@ -17,11 +18,13 @@ async def process_images(message: JobMessage) -> None:
         image_ids = (await session.scalars(
             insert(Images).
             values([
-                {"datetime": int(datetime_), "image_path": image_path, "camera": camera_}
+                {"datetime": datetime_, "image_path": image_path, "camera": camera_}
                 for image_path, datetime_, camera_ in zip(image_pathes, datetimes, cameras)
             ]).
             returning(Images.id)
         )).all()
+
+        await session.commit()
 
         await session.execute(insert(JobsImages).values([
             {"job_id": message["uid"], "image_id": image_id, "status": False}
@@ -38,12 +41,12 @@ async def process_images(message: JobMessage) -> None:
             values(status=True)
         )
 
-        await session.execute(
-            update(Images).
-            where(Images.id == example_id).
-            values(border=[1, 2, 3, 4], object_class=1)
-        )
-        await session.commit()
+        # await session.execute(
+        #     update(Images).
+        #     where(Images.id == example_id).
+        #     values(border=[1, 2, 3, 4], object_class=1)
+        # )
+        # await session.commit()
         # job_row = await session.execute(select(Jobs).filter_by(uid=message["uid"]))
         # job = job_row.scalar_one()
         # session.refresh(job)
