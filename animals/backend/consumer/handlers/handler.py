@@ -1,9 +1,8 @@
-import asyncio
-
 from sqlalchemy import insert, update
 
 from consumer.handlers.utils import call_triton
 from web.api.v1.schemas import JobMessage
+from web.logger import logger
 from web.models.images import Images
 from web.models.jobs_images import JobsImages
 from web.storage.db import async_session
@@ -44,8 +43,11 @@ async def process_images(message: JobMessage) -> None:
                 values(status=True)
             )
 
-            orders = await asyncio.to_thread(call_triton, image_pathes[index])
+            # orders = await asyncio.to_thread(call_triton, image_pathes[index])
+            orders = call_triton(image_pathes[index])
+            logger.info(f"{orders=}")
             for order in orders:
+                logger.info(f"{order=}")
                 left, top, right, bottom = order["xyxy"]
                 order["xyxy"] = [left, top, right - left, bottom - top]
 

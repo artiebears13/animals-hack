@@ -13,7 +13,7 @@ import numpy as np
 
 
 # async def call_triton(image_path: str = f"{DATA_PATH}/train_data_minprirodi/images/1011727.jpg") -> list[dict]:
-async def call_triton(image_path: str = f"./cat.jpg") -> list[dict]:
+def call_triton(image_path: str = f"./cat.jpg") -> list[dict]:
     image: np.ndarray = plt.imread(image_path)  # (h, w, c)
     images = MODEL(image)
     output = []
