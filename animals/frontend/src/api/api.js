@@ -12,7 +12,7 @@ import { uploadFileToServer as mockUploadFile, getFilesFromServer as mockGetFile
 
 export const uploadFileToServer = async (formData) => {
   console.log("here");
-  const response = await fetch('http://localhost/service/api/v1/upload', {
+  const response = await fetch('http://localhost/service/api/v1/upload_images', {
     method: 'POST',
     body: formData,
     headers: {
@@ -26,6 +26,25 @@ export const uploadFileToServer = async (formData) => {
 
   return response.json();  // Возвращаем данные в формате JSON
 };
+
+export const downloadFilesFromServer = async (uid) => {
+    console.log("here");
+    const response = await fetch('http://localhost/service/api/v1/get_result', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ uid }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Error uploading file');
+    }
+
+    return response.json();  // Возвращаем данные в формате JSON
+};
+
+
 
 
 export const getPdfFile = async (uid) => {

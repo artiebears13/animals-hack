@@ -1,7 +1,7 @@
 // src/contexts/FilesContext.js
 
 import React, {createContext, useCallback, useState} from 'react';
-import { uploadFileToServer } from '../api/api';
+import { uploadFileToServer, downloadFilesFromServer } from '../api/api';
 
 // Создаем контекст
 export const FilesContext = createContext();
@@ -28,6 +28,12 @@ export const FilesProvider = ({ children }) => {
         setFiles(files);
     }, []);
 
+    const downloadResponse = async () => {
+        const res = await downloadFilesFromServer(jobId);
+        console.log("download response", res)
+        return res;
+    }
+
     /**
      * Функция для загрузки файла.
      */
@@ -43,13 +49,44 @@ export const FilesProvider = ({ children }) => {
             const formData = getFormData(files, confidenceLevel);
 
             console.log("requesting", formData);
-            const res = await uploadFileToServer(formData);
-            console.log({ res });
-            console.log("images", res.images);
-            // setResponseData(res.images);
-            processFiles(res.images);
+            const uid = await uploadFileToServer(formData);
+            setJobId(uid);
 
-            // Предполагается, что res.images содержит массив или информацию о загруженных файлах
+            const retryDownload = async () => {
+                let res = {};
+                let attempts = 0;
+                const maxAttempts = 200;
+
+                // Повторять запросы, если ответ пустой, пока не превысим максимальное количество попыток
+                while (attempts < maxAttempts) {
+                    res = await downloadResponse();  // Загружаем ответ от сервера
+
+                    if (Object.keys(res).length > 0) {
+                        // Если данные есть, прекращаем попытки и возвращаем результат
+                        break;
+                    }
+
+                    attempts += 1;
+                    console.log(`Attempt ${attempts}: Empty response, retrying...`);
+
+                    // Тайм-аут перед следующей попыткой
+                    await new Promise(resolve => setTimeout(resolve, 500));  // 500 ms
+                }
+
+                return res;
+            };
+            const res = await retryDownload();
+            if (Object.keys(res).length > 0) {
+                // Если ответ не пустой, обрабатываем файлы
+                processFiles(res.images);  // Предполагается, что res.images содержит массив или информацию о загруженных файлах
+                setResponseMessage(`Файл(ы) успешно загружен(ы).`);
+                setShowToast(true);
+            } else {
+                setError('Ошибка: пустой ответ от сервера');
+                setShowToast(true);
+            }
+
+            processFiles(res.images);
             setResponseMessage(`Файл(ы) успешно загружен(ы).`);
             setShowToast(true);
 
