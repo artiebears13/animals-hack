@@ -21,7 +21,7 @@ export const FilesProvider = ({ children }) => {
     const [processedFiles, setProcessedFiles] = useState([]);
     const [sizeThreshold, setSizeThreshold] = useState({width: 128, height: 128});
     const [getResponse, setGetResponse] = useState(false);
-    const [jobId, setJobId] = useState("hui");
+    const [jobId, setJobId] = useState("");
 
     const setUploadedFiles = useCallback((files) => {
         console.log("setSelectedFiles", files);
@@ -38,8 +38,10 @@ export const FilesProvider = ({ children }) => {
      * Функция для загрузки файла.
      */
     const uploadFiles = async () => {
+        setJobId("");
         setLoading(true);
         console.log("set loading");
+        console.log("sizeThreshold", sizeThreshold);
         setError(null);
         setShowToast(false);
         setResponseMessage('');
@@ -99,16 +101,22 @@ export const FilesProvider = ({ children }) => {
         }
     };
 
-    const getFormData = (files, confidenceLevel, sizeThreshold) => {
+    const getFormData = (files, confidenceLevel) => {
         const formData = new FormData();
         formData.append('count', files.length);
 
         files.forEach((file, index) => {
+            console.log({sizeThreshold});
             console.log("data", file.file.lastModified);
             formData.append(`images`, file.file);
             formData.append(`camera`, file.camera);
             formData.append(`created_at`, file.file.lastModified);
         });
+        console.log("szThresh", sizeThreshold);
+        console.log("szThresh1", {...sizeThreshold});
+        console.log("szThresh1", JSON.stringify({...sizeThreshold}));
+
+
 
         formData.append('confidence_level', confidenceLevel);
         formData.append('size_threshold', JSON.stringify(sizeThreshold));

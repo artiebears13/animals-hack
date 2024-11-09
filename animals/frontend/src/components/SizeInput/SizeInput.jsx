@@ -6,6 +6,7 @@ export const SizeInput = () => {
     const {sizeThreshold, setSizeThreshold} = useContext(FilesContext);
 
     const setWidth = (e) => {
+        console.log("setHeight");
         setSizeThreshold((prev) => {
             return {
                 ...prev,
@@ -15,6 +16,7 @@ export const SizeInput = () => {
     }
 
     const setHeight = (e) => {
+        console.log("setHeight");
         setSizeThreshold((prev) => {
             return {
                 ...prev,
