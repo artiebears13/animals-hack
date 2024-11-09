@@ -1,0 +1,27 @@
+.size-input-field{
+    width: 70px;
+    margin: 0 10px;
+    background-color: transparent;
+    border: 1px solid #2d3034;
+    border-radius: 10px;
+    padding: 0 4px;
+    text-align: center;
+
+}
+.size-input-field:focus{
+    border-color: #4f5358;
+    outline: none;
+}
+
+.size-input-field::-webkit-outer-spin-button,
+.size-input-field::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Удаление стрелочек для Firefox */
+.size-input-field[type=number] {
+    -moz-appearance: textfield;
+}
+
+

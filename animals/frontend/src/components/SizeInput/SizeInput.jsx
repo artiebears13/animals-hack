@@ -1,5 +1,6 @@
 import {useContext} from "react";
 import {FilesContext} from "../../contexts/FilesContext";
+import './SizeInput.css';
 
 export const SizeInput = () => {
     const {sizeThreshold, setSizeThreshold} = useContext(FilesContext);
@@ -22,14 +23,17 @@ export const SizeInput = () => {
         });
     }
     return (
-        <div>
+        <div className="size-input-container">
+            <h3>Минимальный размер объекта: </h3>
             <input
+                className="size-input-field"
                 type="number"
                 value={sizeThreshold.width}
                 onChange={setWidth}
             />
-            <span> px</span>
+            X
             <input
+                className="size-input-field"
                 type="number"
                 value={sizeThreshold.height}
                 onChange={setHeight}
