@@ -38,10 +38,7 @@ const generateRandomBorder = (fileName) => {
  * @returns {Promise<Object>} - Возвращает данные загруженного файла.
  */
 export const uploadFileToServer = (formData) => {
-    console.log("in uploadFileToServer");
     const count = parseInt(formData.get('count'), 10);
-    console.log(`Количество файлов: ${count}`);
-    console.log(`FormData: ${formData.getAll('images')}`);
 
     const files = [];
     const createdAtArray = [];
@@ -91,7 +88,6 @@ export const uploadFileToServer = (formData) => {
                 error_message: '',
                 images: uploadedFiles
             };
-            console.log("response", response);
             resolve(response);
         }, 3000); // 3 секунды задержки
     });

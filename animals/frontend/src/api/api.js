@@ -11,7 +11,6 @@ import { uploadFileToServer as mockUploadFile, getFilesFromServer as mockGetFile
 // import axios from 'axios';
 
 export const uploadFileToServer = async (formData) => {
-  console.log("here");
   const response = await fetch('http://localhost/service/api/v1/upload_images', {
     method: 'POST',
     body: formData,
@@ -28,7 +27,6 @@ export const uploadFileToServer = async (formData) => {
 };
 
 export const downloadFilesFromServer = async (uid) => {
-    console.log("here");
     const response = await fetch('http://localhost/service/api/v1/get_result', {
         method: 'POST',
         headers: {
