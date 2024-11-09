@@ -8,14 +8,14 @@ from prometheus_client import start_http_server
 from starlette.middleware.cors import CORSMiddleware
 from starlette_context import plugins
 from starlette_context.middleware import RawContextMiddleware
-from web.api.tech.router import router as tech_router
-from web.api.v1.router import router as v1_router
-from web.api.v2.router import router as v2_router
-from web.config.settings import settings
-from web.logger import LOGGING_CONFIG, logger
-from web.metrics import http_prometheus_middleware
-from web.storage.db import init_db
-from web.storage.rabbit import setup_queue_and_exchange
+from .api.tech.router import router as tech_router
+from .api.v1.router import router as v1_router
+from .api.v2.router import router as v2_router
+from .config.settings import settings
+from .logger import LOGGING_CONFIG, logger
+from .metrics import http_prometheus_middleware
+from .storage.db import init_db
+from .storage.rabbit import setup_queue_and_exchange
 
 
 def setup_middleware(app: FastAPI) -> None:

@@ -2,29 +2,16 @@ services:
   backend:
     container_name: backend
     build:
-      dockerfile: docker/backend/Dockerfile
       context: .
+      dockerfile: ./docker/backend/Dockerfile
+    volumes:
+      - ./:/app
+    working_dir: /app
+    environment:
+      - PYTHONPATH=/app
     ports:
       - "8001:8001"
       - "8081:8081"
-    command: python3 /app/web
-    restart: on-failure
-    env_file:
-      - ./animals/backend/web/config/.env
-    volumes:
-#      - ./duplicates/backend/__init__.py:/app/duplicates/__init__.py
-      - ./animals/backend:/app/
-      - ./data/:/data
-    depends_on:
-      db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    healthcheck:
-      test: curl --fail http://0.0.0.0:8001/api/tech/liveness || exit 1
-      interval: 1s
-      timeout: 1s
-      retries: 5
 
   rabbitmq:
     container_name: rabbitmq
@@ -64,7 +51,6 @@ services:
     env_file:
       - ./animals/backend/consumer/config/.env
     volumes:
-#      - ./duplicates/backend/__init__.py:/app/duplicates/__init__.py
       - ./animals/backend:/app/
       - ./data/:/data
     depends_on:
@@ -99,25 +85,25 @@ services:
       frontend:
         condition: service_started
 
-#  triton:
-#    container_name: triton
-#    build:
-#      context: .
-#      dockerfile: docker/triton/Dockerfile
-##    deploy:
-##      resources:
-##        reservations:
-##          devices:
-##            - driver: nvidia
-##              count: 1
-##              capabilities: [ gpu ]
-#    volumes:
-#      - ./animals/triton/models:/models
-##    environment:
-##      - NVIDIA_VISIBLE_DEVICES=all
-#    command: >
-#        /bin/sh -c "tritonserver --http-port=8002 --metrics-port=8003 --grpc-port=8004 --model-repository=/models"
-#    ports:
-#      - 8002:8002
-#      - 8003:8003
-#      - 8004:8004
+  triton:
+    container_name: triton
+    build:
+      context: .
+      dockerfile: docker/triton/Dockerfile
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: 1
+#              capabilities: [ gpu ]
+    volumes:
+      - ./animals/triton/models:/models
+#    environment:
+#      - NVIDIA_VISIBLE_DEVICES=all
+    command: >
+        /bin/sh -c "tritonserver --http-port=8002 --metrics-port=8003 --grpc-port=8004 --model-repository=/models"
+    ports:
+      - 8002:8002
+      - 8003:8003
+      - 8004:8004
