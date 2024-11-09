@@ -1,9 +1,8 @@
 from datetime import datetime
 from typing import List
-from typing_extensions import TypedDict
 
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from pydantic import BaseModel, Field, field_validator
+from typing_extensions import TypedDict
 
 
 class Coordinate(BaseModel):
@@ -30,7 +29,7 @@ class AnimalsBorder(BaseModel):
         return value
 
 
-class AnimalsImage(BaseModel):
+class AnimalsImageRequest(BaseModel):
     filename: str = Field(..., description="Имя файла изображения", min_length=1)
     created_at: datetime = Field(..., description="Дата и время создания изображения")
     object_class: bool = Field(..., description="Класс объекта: True если хороший, иначе False")
@@ -44,13 +43,34 @@ class AnimalsImage(BaseModel):
         return value
 
 
+class FileImageResponse(BaseModel):
+    # file: UploadFile = File(...)
+    created_at: int = Field(...)
+    camera: str = Field(...)
+
+
+class SizeThreshold(BaseModel):
+    width: int = Field(default=128, gt=0)
+    height: int = Field(default=128, gt=0)
+
+
+class AnimalsImageResponse(BaseModel):
+    # count: int = Field(..., description="Количество изображений")
+    # images: List[FileImageResponse]
+    confidence_level: float = Field(default=0.95, description="Уровень уверенности предсказания")
+    # size_threshold: SizeThreshold
+    width: int = Field(default=128, gt=0)
+    height: int = Field(default=128, gt=0)
+
+
 class UidResponse(BaseModel):
     uid: str
 
 
 class BodyData(TypedDict):
     filenames: list[str]
-    datetimes: list[str]
+    datetimes: list[int]
+    cameras: list[str]
     confidence_lvl: float
 
 

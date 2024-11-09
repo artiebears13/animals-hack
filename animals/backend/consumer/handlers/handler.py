@@ -1,28 +1,24 @@
-import datetime
-
-from consumer.logger import logger
-from sqlalchemy import select, insert, update
-from web.models.jobs import Jobs
+from sqlalchemy import insert, update
+from web.api.v1.schemas import JobMessage
+from web.logger import logger
 from web.models.images import Images
 from web.models.jobs_images import JobsImages
 from web.storage.db import async_session
-from web.api.v1.schemas import JobMessage
-
-
-TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%S'
 
 
 async def process_images(message: JobMessage) -> None:
     image_pathes = message["body"]["data"]["filenames"]
     datetimes = message["body"]["data"]["datetimes"]
+    cameras = message["body"]["data"]["cameras"]
     confidence_lvl = message["body"]["data"]["confidence_lvl"]
     image_ids = []
+
     async with async_session() as session:
         image_ids = (await session.scalars(
             insert(Images).
             values([
-                    {"datetime": datetime.datetime.strptime(datetime_, TIME_FORMAT), "image_path": image_path}
-                    for image_path, datetime_ in zip(image_pathes, datetimes)
+                {"datetime": int(datetime_), "image_path": image_path, "camera": camera_}
+                for image_path, datetime_, camera_ in zip(image_pathes, datetimes, cameras)
             ]).
             returning(Images.id)
         )).all()
@@ -35,6 +31,7 @@ async def process_images(message: JobMessage) -> None:
         await session.commit()
 
         example_id = image_ids[0]
+
         await session.execute(
             update(JobsImages).
             where(JobsImages.job_id == message["uid"], JobsImages.image_id == example_id).
@@ -44,7 +41,7 @@ async def process_images(message: JobMessage) -> None:
         await session.execute(
             update(Images).
             where(Images.id == example_id).
-            values(border=[1, 2, 3, 4], object_class=0.5)
+            values(border=[1, 2, 3, 4], object_class=1)
         )
         await session.commit()
         # job_row = await session.execute(select(Jobs).filter_by(uid=message["uid"]))
@@ -58,4 +55,3 @@ async def process_images(message: JobMessage) -> None:
         # session.refresh(row_check)
 
         # logger.info(f"Finish work with queued job; Processed: {row_check}")
-
