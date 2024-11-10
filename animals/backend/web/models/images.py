@@ -17,7 +17,7 @@ class Images(Base):
     datetime = Column(String)
     image_path = Column(String)
     border = Column(JSONB, nullable=True)
-    object_class = Column(Float, nullable=True)
+    object_class = Column(JSONB, nullable=True)
     camera = Column(String, nullable=True)
     job_images: Mapped[list["JobsImages"]] = relationship(
         "JobsImages", back_populates="image", uselist=True,
