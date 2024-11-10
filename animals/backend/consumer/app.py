@@ -1,3 +1,4 @@
+# Файл с настройкой консьюмера
 import asyncio
 import logging.config
 

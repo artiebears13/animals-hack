@@ -1,3 +1,4 @@
+# Основные API
 import contextlib
 import os
 from typing import Any
@@ -32,7 +33,7 @@ ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png", "image/gif"]
 DIRECTORY = "/data/raw"
 
 
-# перенести в конфиг потом
+# api на загрузку файла
 
 @router.post("/upload_images",
              responses={
@@ -46,6 +47,7 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
                         created_at: List[str] = Form(...),
                         camera: List[str] = Form(...),
                         session: AsyncSession = Depends(get_db)):
+    # добавляем запись о задаче
     current_id = str(uuid4())
     db_job = Jobs(uid=current_id)
     session.add(db_job)
@@ -56,7 +58,7 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
     uploaded_files_name = []
     created_at_time = []
     valid_camera = []
-
+    # скачиваем файл
     image_info = zip(images, camera, created_at)
     for index, (file, camera, created_at) in enumerate(image_info):
         if file.content_type not in ALLOWED_CONTENT_TYPES:
@@ -75,7 +77,7 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
         except Exception as e:
             logger.error(f"Ошибка при чтении и сохранении файла {current_id}_hash_{file.filename}: {e}")
             continue
-
+    # собираем всю информацию
     msg: JobMessage = {
         "uid": current_id,
         "body":
@@ -88,15 +90,17 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
 
              }
     }
+    # отправляем в очередь
     await publish_message(msg)
 
     return JSONResponse({"uid": current_id}, status_code=200)
 
-
+# API на получение результата работы задачи с номером uid
 @router.post("/get_result")
 async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db), ):
     uid = body.uid
     logger.info(f"uid: {uid}")
+    # собираем данные о соответствиях
     jobs_images = (await session.scalars(
         select(JobsImages).
         where(JobsImages.job_id == uid).
@@ -105,12 +109,12 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
     logger.info(jobs_images)
     if len(jobs_images) == 0:
         return JSONResponse({}, status_code=200)
+    # проверяем готовность задачи
     for job in jobs_images:
         if not job.status:
             return JSONResponse({}, status_code=200)
-    logger.info(f"{jobs_images=}")
-    [logger.info(f"{job=}") for job in jobs_images]
 
+    # формируем ответ
     def form_payload_borders(current_job):
         payload_borders = []
         job_idx = hash(current_job.image.image_path)
@@ -139,18 +143,20 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
 
     return JSONResponse(result)
 
-
+# API получения отчета в формате пдф
 @router.post('/get_result_report')
 async def get_result(body: PdfRequestBody, session: AsyncSession = Depends(get_db), ):
     uid = body.uid
     conf_lvl = body.confidence_level
 
+    # селект по uid задачи
     jobs_images = (await session.scalars(
         select(JobsImages).
         where(JobsImages.job_id == uid, JobsImages.status == True).
         options(joinedload(JobsImages.image))
     )).all()
 
+    # функции приведения к нужному формату данных для формирования пдф
     def reformat_bbox(bbox: list[int]):
         res = ""
         for i, cord in enumerate(bbox):
@@ -170,7 +176,8 @@ async def get_result(body: PdfRequestBody, session: AsyncSession = Depends(get_d
     borders = [job.image.border for job in jobs_images]
     obj_class = [job.image.object_class for job in jobs_images]
     logger.info(borders)
-    # взять из бд data[[Name	Bbox	Class]]
+
+    # приводим данные к df
     data = pd.DataFrame({
         "Name": [],
         "Bbox": [],
@@ -185,12 +192,15 @@ async def get_result(body: PdfRequestBody, session: AsyncSession = Depends(get_d
             }, index=[i+k])], ignore_index=True)
 
     logger.info(data)
+
+    # создаем пдф
     pdf = ImageReportPDF(f"/data/{uid}_report.pdf", data)
     pdf_file = pdf.generate()
 
+    # возвращаем на фронт в виде файлоа
     return FileResponse(f"/data/{uid}_report.pdf")
 
-
+# отправка сообщений в очередь
 async def publish_message(body: dict[str, Any]) -> None:
     logger.info("Sending message: %s", body)
     async with channel_pool.acquire() as channel:  # type: Channel
