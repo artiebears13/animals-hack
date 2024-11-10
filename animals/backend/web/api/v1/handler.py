@@ -140,8 +140,9 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
 
 
 @router.post('/get_result_report')
-async def get_result(body: ResultRequest, session: AsyncSession = Depends(get_db), ):
+async def get_result(body: PdfRequestBody, session: AsyncSession = Depends(get_db), ):
     uid = body.uid
+    conf_lvl = body.confidence_level
 
     jobs_images = (await session.scalars(
         select(JobsImages).
@@ -153,21 +154,34 @@ async def get_result(body: ResultRequest, session: AsyncSession = Depends(get_db
         res = ""
         for i, cord in enumerate(bbox):
             if i == len(bbox) - 1:
-                res += str(cord)
+                res += str(int(cord))
             else:
-                res += str(cord) + ","
+                res += str(int(cord)) + ","
         return res
 
+    def convert_class_obj(class_obg: int):
+        if class_obg >= conf_lvl:
+            return 1
+        else:
+            return 0
+
     filenames = [str(job.image.image_path).split("/")[-1].split("_hash_")[-1] for job in jobs_images]
-    borders = [reformat_bbox(job.image.border) for job in jobs_images]
+    borders = [job.image.border for job in jobs_images]
     obj_class = [job.image.object_class for job in jobs_images]
     logger.info(borders)
     # взять из бд data[[Name	Bbox	Class]]
     data = pd.DataFrame({
-        "Name": filenames,
-        "Bbox": borders,
-        "Class": obj_class
+        "Name": [],
+        "Bbox": [],
+        "Class": [],
     })
+    for i, filename in enumerate(filenames):
+        for border in borders[i]:
+            data = pd.concat([data, pd.DataFrame({
+                "Name": filenames[i],
+                "Bbox": reformat_bbox(border),
+                "Class": convert_class_obj(obj_class[i]),
+            })])
 
     logger.info(data)
     pdf = ImageReportPDF(f"/data/{uid}_report.pdf", data)
