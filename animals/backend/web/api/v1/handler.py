@@ -1,26 +1,22 @@
 import contextlib
-import datetime
 import os
 from typing import Any
 from uuid import uuid4
-import pandas as pd
+
 import msgpack
-import sqlalchemy
+import pandas as pd
 from aio_pika import Message
 from aio_pika.abc import DeliveryMode, ExchangeType
 from fastapi import Depends, UploadFile, Form, File
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
-from fastapi.responses import StreamingResponse
 from starlette.responses import JSONResponse, FileResponse
 from starlette_context import context
 from starlette_context.errors import ContextDoesNotExistError
 
-from web.config.settings import settings
-
 from consumer.handlers.utils.reports import ImageReportPDF
-from consumer.handlers.utils.bbox import BoundingBoxConverter
+from web.config.settings import settings
 from web.logger import logger
 from web.storage.db import get_db
 from web.storage.rabbit import channel_pool
@@ -104,9 +100,13 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
         options(joinedload(JobsImages.image))
     )).all()
     logger.info(jobs_images)
+    if len(jobs_images) == 0:
+        return JSONResponse({}, status_code=200)
     for job in jobs_images:
         if not job.status:
             return JSONResponse({}, status_code=200)
+    logger.info(f"{jobs_images=}")
+    [logger.info(f"{job=}") for job in jobs_images]
     result = {
         # "result": [{"status": job.status, "image_id": job.image_id, "border": job.image.border,
         # "filename": job.image.image_path} for job in jobs_images]}
@@ -118,7 +118,7 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
                         [{"id": hash(job.image.image_path),
                           "animal_name": "animal",
                           "object_class": job.image.object_class,
-                          "left_up_corner": {"x": job.image.border[0], "y": job.image.border[0]},
+                          "left_up_corner": {"x": job.image.border[0], "y": job.image.border[1]},
                           "width": job.image.border[2],
                           "height": job.image.border[3]
                           }
