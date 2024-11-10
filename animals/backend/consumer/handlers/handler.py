@@ -8,7 +8,7 @@ from web.logger import logger
 from web.models.images import Images
 from web.models.jobs_images import JobsImages
 from web.storage.db import async_session
-
+from PIL import Image
 
 async def process_images(message: JobMessage) -> None:
     image_pathes = message["body"]["data"]["filenames"]
@@ -34,21 +34,23 @@ async def process_images(message: JobMessage) -> None:
             for image_id in image_ids
         ]))
 
+        await session.commit()
+
         #######################
         # do smth with pictures here
         #######################
 
         for index, image_id in enumerate(image_ids):
-
-            logger.info(f"{image_pathes=}")
-            logger.info(f"{image_pathes[index]=}")
-            # orders = await asyncio.to_thread(call_triton, image_pathes[index])
+            logger.info(f"11111111")
             orders = call_triton(os.path.join('/data/raw', image_pathes[index]))
-            logger.info(f"{orders=}")
+            logger.info(f"22222222")
+
+            # logger.info(f"{orders=}")
             for order in orders:
-                logger.info(f"{order=}")
+                # logger.info(f"{order=}")
                 left, top, right, bottom = order["xyxy"]
                 order["xyxy"] = [left, top, right - left, bottom - top]
+
                 if order["conf"] >= 0.92:
                     order["conf"] = 1
                 else:
@@ -56,24 +58,45 @@ async def process_images(message: JobMessage) -> None:
                 logger.info(f'{order["xyxy"]}, {order["conf"]}')
 
             await session.execute(
-                update(Images).
-                where(Images.id == image_id).
-                # values(border=, object_class=orders['cls'])
-                values([
-                    # {"border": order["xyxy"], "object_class": order["conf"]}
-                    {"border": [100, 200, 300, 100], "object_class": 0}
-                    # for order in orders
-                ])
-
-            )
-
-            await session.execute(
                 update(JobsImages).
                 where(JobsImages.job_id == message["uid"], JobsImages.image_id == image_id).
                 values(status=True)
             )
 
+            res_borders = [order["xyxy"] for order in orders]
+            res_cls = [order["conf"] for order in orders]
+            # res = [
+            #         {"border": order["xyxy"], "object_class": order["conf"]}
+            #         {"border": [100, 200, 300, 100], "object_class": 0}
+                    # for order in orders
+                # ]
+            await session.execute(
+                update(Images).
+                where(Images.id == image_id).
+                values(border=res_borders, object_class=res_cls)
+            )
             await session.commit()
+
+
+            # logger.info(f"{image_pathes=}")
+            # logger.info(f"{image_pathes[index]=}")
+            # orders = await asyncio.to_thread(call_triton, image_pathes[index])
+
+
+            # await session.execute(
+            #     update(Images).
+            #     where(Images.id == image_id).
+            #     # values(border=, object_class=orders['cls'])
+            #     values([
+            #         # {"border": order["xyxy"], "object_class": order["conf"]}
+            #         {"border": [100, 200, 300, 100], "object_class": 0}
+            #         # for order in orders
+            #     ])
+            #
+            # )
+
+
+            # session.commit()
         # await session.execute(
         #     update(Images).
         #     where(Images.id == example_id).

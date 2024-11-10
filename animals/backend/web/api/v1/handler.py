@@ -99,6 +99,8 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
         options(joinedload(JobsImages.image))
     )).all()
     logger.info(jobs_images)
+    if len(jobs_images) == 0:
+        return JSONResponse({}, status_code=200)
     for job in jobs_images:
         if not job.status:
             return JSONResponse({}, status_code=200)
