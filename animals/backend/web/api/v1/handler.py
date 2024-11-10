@@ -116,7 +116,7 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
         for i in range(len(job_borders)):
             current_border = {}
             current_border["id"] = job_idx
-            current_border["object_class"] = job_object_cls
+            current_border["object_class"] = job_object_cls[i]
             current_border["left_up_corner"] = {"x": job_borders[i][0], "y": job_borders[i][1]}
             current_border["width"] = job_borders[i][2]
             current_border["height"] = job_borders[i][3]

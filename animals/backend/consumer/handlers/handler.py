@@ -51,10 +51,11 @@ async def process_images(message: JobMessage) -> None:
                 left, top, right, bottom = order["xyxy"]
                 order["xyxy"] = [left, top, right - left, bottom - top]
 
-                if order["conf"] >= 0.92:
+                if order["conf"] >= 0.88:
                     order["conf"] = 1
                 else:
                     order["conf"] = 0
+
                 logger.info(f'{order["xyxy"]}, {order["conf"]}')
 
             await session.execute(
