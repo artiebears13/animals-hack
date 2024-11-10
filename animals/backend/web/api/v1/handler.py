@@ -62,6 +62,9 @@ async def upload_images(body: AnimalsImageResponse = Depends(),
         if file.content_type not in ALLOWED_CONTENT_TYPES:
             logger.warning(f"Недопустимый тип файла: {file.filename} ({file.content_type})")
         try:
+            if '/' in file.filename:
+                file.filename = str(file.filename).split('/')[-1]
+
             path = os.path.join(DIRECTORY, f"{current_id}_hash_{file.filename}")
             # Асинхронно считываем содержимое файла
             with open(path, "wb+") as file_object:

@@ -11,7 +11,7 @@ export const FilesContext = createContext();
  */
 export const FilesProvider = ({ children }) => {
     const [files, setFiles] = useState([]); // Список загруженных файлов
-    const [confidenceLevel, setConfidenceLevel] = useState(0.9); // Список загруженных файлов
+    const [confidenceLevel, setConfidenceLevel] = useState(0.88); // Список загруженных файлов
     const [responseData, setResponseData] = useState([]); // Список загруженных файлов
     const [loading, setLoading] = useState(false); // Статус загрузки
     const [error, setError] = useState(null); // Ошибка при загрузке
