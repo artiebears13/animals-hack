@@ -16,15 +16,12 @@ export const PhotoGallery = () => {
     const [classFilter, setClassFilter] = useState('all');
     const [animalsFilter, setAnimalsFilter] = useState(['all']);
     const [cameraFilter, setCameraFilter] = useState(['all']);
-
-    // Состояние для управления видимостью панели фильтров
     const [filtersOpen, setFiltersOpen] = useState(false);
 
     // Опции для фильтров
     const [animalOptions, setAnimalOptions] = useState(['all']);
     const [cameraOptions, setCameraOptions] = useState(['all']);
 
-    // Извлечение уникальных названий животных
     useEffect(() => {
         const animalNamesSet = new Set();
         processedFiles.forEach(file => {
@@ -39,7 +36,6 @@ export const PhotoGallery = () => {
         setAnimalOptions(uniqueAnimalNames);
     }, [processedFiles]);
 
-    // Извлечение уникальных названий камер
     useEffect(() => {
         const cameraNamesSet = new Set();
         processedFiles.forEach(file => {
@@ -52,11 +48,9 @@ export const PhotoGallery = () => {
         setCameraOptions(uniqueCameraNames);
     }, [processedFiles]);
 
-    // Мемоизированные отфильтрованные и отсортированные фото
     const filteredPhotos = useMemo(() => {
         if (!Array.isArray(processedFiles)) return [];
 
-        // Фильтрация
         const updatedPhotos = processedFiles.map(file => {
             // Фильтрация бордеров по классу и животным
             const filteredBorders = file.border.filter(borderItem => {
@@ -65,10 +59,8 @@ export const PhotoGallery = () => {
                 return classMatch && animalMatch;
             });
 
-            // Проверка фильтра камеры
             const cameraMatch = cameraFilter.includes('all') || cameraFilter.includes(file.camera);
 
-            // Включение файла только если он соответствует фильтру камеры и имеет отфильтрованные бордеры
             if (cameraMatch && filteredBorders.length > 0) {
                 return {...file, border: filteredBorders};
             } else {
@@ -134,14 +126,12 @@ export const PhotoGallery = () => {
         }
     };
 
-    // Вспомогательные функции
     const isAnimalSelected = (animalName) => animalsFilter.includes(animalName);
     const isAllAnimalsSelected = () => animalsFilter.includes('all');
 
     const isCameraSelected = (cameraName) => cameraFilter.includes(cameraName);
     const isAllCamerasSelected = () => cameraFilter.includes('all');
 
-    // Обработчик открытия/закрытия панели фильтров
     const toggleFilters = () => setFiltersOpen(!filtersOpen);
 
     return (
@@ -152,9 +142,7 @@ export const PhotoGallery = () => {
             <DownloadPdfButton />
             </div>
             <div className="photo-gallery">
-                {/* Элементы управления сортировкой и фильтрацией */}
                 <div className="controls">
-                    {/* Выпадающий список для сортировки */}
                     <StatsContainer buttonClassName={"btn class-select sort-button"}/>
 
                     <select
@@ -169,16 +157,13 @@ export const PhotoGallery = () => {
                         <option value="date-desc">Сортировать по дате (новые сначала)</option>
                     </select>
 
-                    {/* Кнопка "Фильтры" */}
                     <button className="btn filter-button" onClick={toggleFilters} aria-label="Открыть фильтры">
                         Фильтры
                     </button>
                 </div>
 
-                {/* Панель фильтров */}
                 {filtersOpen && (
                     <div className="filters-panel">
-                        {/* Фильтр по камерам */}
                         <div className="filter-section">
                             <h3>Камера:</h3>
                             {cameraOptions.map((camera) => (
@@ -194,7 +179,6 @@ export const PhotoGallery = () => {
                             ))}
                         </div>
 
-                        {/* Фильтр по животным */}
                         <div className="filter-section">
                             <h3>Классы:</h3>
                             {animalOptions.map((animal) => (

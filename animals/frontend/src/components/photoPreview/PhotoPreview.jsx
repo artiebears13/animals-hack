@@ -11,11 +11,9 @@ const PhotoPreview = ({ file }) => {
             return;
         }
 
-        // Создаем временный URL для файла
         const objectUrl = URL.createObjectURL(file);
         setPreview(objectUrl);
 
-        // Освобождаем память при размонтировании компонента
         return () => URL.revokeObjectURL(objectUrl);
     }, [file]);
 

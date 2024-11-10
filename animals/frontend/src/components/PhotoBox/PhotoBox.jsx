@@ -16,7 +16,6 @@ export const PhotoBox = ({ id, processedFile }) => {
             return;
         }
 
-        // Создаем временный URL для файла
         const objectUrl = URL.createObjectURL(file);
         setPreview(objectUrl);
 
@@ -28,7 +27,6 @@ export const PhotoBox = ({ id, processedFile }) => {
             setOriginalHeight(img.naturalHeight);
         };
 
-        // Освобождаем память при размонтировании компонента
         return () => URL.revokeObjectURL(objectUrl);
     }, [file]);
 
@@ -58,13 +56,12 @@ export const PhotoBox = ({ id, processedFile }) => {
                         typeof borderItem.left_up_corner.x !== "number" ||
                         typeof borderItem.left_up_corner.y !== "number"
                     ) {
-                        // Пропустить этот элемент, если данные некорректны
                         return null;
                     }
 
                     const animalName = borderItem.animal_name || "Unknown";
 
-                    // Применяем масштабирование к относительным координатам и размерам границы
+                    // масштабирование
                     const boxStyle = {
                         width: `${borderItem.width * displayedWidth / originalWidth}px`,
                         height: `${borderItem.height * displayedHeight / originalHeight}px`,
@@ -73,16 +70,14 @@ export const PhotoBox = ({ id, processedFile }) => {
                         borderColor: `${borderItem.object_class === 1 ? "blue" : "red"}`
                     };
 
-                    // Стиль для названия объекта
                     const animalNameStyle = {
                         backgroundColor: `${borderItem.object_class === 1 ? "blue" : "red"}`,
-                        // Дополнительные стили можно добавить здесь
                     };
 
                     return (
                         <div
                             id={`${borderItem.id}_image`}
-                            key={index} // Используйте уникальный идентификатор, если доступен
+                            key={index}
                             className="photoBox-box"
                             style={boxStyle}
                         >

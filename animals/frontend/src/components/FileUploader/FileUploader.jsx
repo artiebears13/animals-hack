@@ -35,19 +35,16 @@ const FileUploader = () => {
     const allowedMimeTypes = ['image/jpeg', 'image/png'];
 
     const inputAreaClick = (e) => {
-        // Можно реализовать дополнительные действия при клике на область ввода, если нужно
     }
 
-    // Обработчик клика для выбора файлов
     const handleFileButtonClick = (e) => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
 
-    // Обработчик клика для выбора папок
     const handleFolderButtonClick = (e) => {
-        e.stopPropagation(); // Останавливаем всплытие события
+        e.stopPropagation();
         if (folderInputRef.current) {
             folderInputRef.current.click();
         }
@@ -66,7 +63,6 @@ const FileUploader = () => {
         e.currentTarget.classList.remove('drag-over');
     };
 
-    // Обновленная функция handleDrop для сбора пути к файлам
     const handleDrop = async (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -89,14 +85,13 @@ const FileUploader = () => {
         e.dataTransfer.clearData();
     };
 
-    // Обновленная функция traverseFileTree для сбора пути к файлам
     const traverseFileTree = (item, path, fileList) => {
         return new Promise((resolve) => {
             if (item.isFile) {
                 item.file((file) => {
                     fileList.push({
                         file: file,
-                        camera: path || 'root', // Если путь пустой, устанавливаем 'root'
+                        camera: path || 'root',
                     });
                     resolve();
                 });
@@ -127,7 +122,6 @@ const FileUploader = () => {
         }
     };
 
-    // Обновленная функция handleFiles для обработки объектов {file, camera}
     const handleFiles = (selectedFiles) => {
         const validFiles = [];
         const invalidFiles = [];
@@ -159,7 +153,6 @@ const FileUploader = () => {
         return allowedMimeTypes.includes(file.type);
     };
 
-    // Обработчик изменения ползунка уверенности
     const handleSliderChange = (e) => {
         setConfidenceLevel(parseFloat(e.target.value));
     };
@@ -180,7 +173,6 @@ const FileUploader = () => {
         uploadFiles();
     };
 
-    // Функция удаления выбранного файла
     const deleteFile = (index) => {
         const updatedFiles = [...files];
         updatedFiles.splice(index, 1);
@@ -188,7 +180,6 @@ const FileUploader = () => {
         setErrorMessage('');
     };
 
-    // Функция рендера поповера
     const renderPopover = (title, content) => (
         <Popover id="popover-basic">
             <Popover.Header as="h3">{title}</Popover.Header>
@@ -203,7 +194,6 @@ const FileUploader = () => {
             const max = parseFloat(slider.max);
             const value = parseFloat(slider.value);
             const percentage = ((value - min) / (max - min)) * 100;
-            // Устанавливаем градиентный фон: желтый до ползунка, #2c3034 после
             slider.style.background = `linear-gradient(to right, #f4c142 0%, #f4c142 ${percentage}%, #2c3034 ${percentage}%, #2c3034 100%)`;
         }
     };
@@ -254,8 +244,8 @@ const FileUploader = () => {
                     style={{ display: 'none' }}
                     accept="image/jpeg, image/png"
                     multiple
-                    webkitdirectory="true" // Позволяет выбирать папки
-                    directory="" // Для некоторых браузеров
+                    webkitdirectory="true"
+                    directory=""
                 />
                 {/* Добавьте кнопки для выбора файлов и папок */}
                 <div className="input-file-buttons-container" style={{ marginTop: '10px' }}>

@@ -3,7 +3,6 @@
 import React, {createContext, useCallback, useState} from 'react';
 import { uploadFileToServer, downloadFilesFromServer } from '../api/api';
 
-// Создаем контекст
 export const FilesContext = createContext();
 
 /**
@@ -58,9 +57,8 @@ export const FilesProvider = ({ children }) => {
                 while (attempts < maxAttempts) {
                     console.log({uid});
                     console.log('type', typeof uid);
-                    res = await downloadResponse(uid);  // Загружаем ответ от сервера
+                    res = await downloadResponse(uid);
                     if (Object.keys(res).length > 0) {
-                        // Если данные есть, прекращаем попытки и возвращаем результат
                         break;
                     }
 
@@ -73,10 +71,7 @@ export const FilesProvider = ({ children }) => {
                 return res;
             };
             const res = await retryDownload(uid);
-            console.log("res", res);
             if (Object.keys(res).length > 0) {
-                // Если ответ не пустой, обрабатываем файлы
-                console.log("results", res.images);
                 processFiles(res.images);
                 processStats(res.stats);
                 setResponseMessage(`Файл(ы) успешно загружен(ы).`);
@@ -122,14 +117,14 @@ export const FilesProvider = ({ children }) => {
                 const matchingFile = files.find(file => file.file.name === image.filename);
 
                 const updatedBorders = image.border.map(borderObject => ({
-                    ...borderObject, // сохраняем все остальные поля
+                    ...borderObject,
                     animal_name: borderObject.object_class === 1 ? "качественное" : "вспомагательное", // меняем animal_name
                 }));
 
                 return {
-                    ...image, // сохраняем все остальные свойства из image
-                    file: matchingFile ? matchingFile.file : null, // добавляем свойство file с найденным файлом
-                    border: updatedBorders, // заменяем border с обновленными значениями
+                    ...image,
+                    file: matchingFile ? matchingFile.file : null,
+                    border: updatedBorders,
                 };
             });
         });

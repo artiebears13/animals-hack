@@ -8,14 +8,6 @@ Modal.setAppElement('#root');
 export const StatsContainer = ({buttonClassName}) => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const { stats } = useContext(FilesContext);
-    // const stats = {
-    //     total_files_upload: 10,
-    //     total_class1_files: 3,
-    //     total_class0_files: 5,
-    //     total_files_without_objects: 2,
-    //     average_animals_per_photo: 2.3,
-    //     total_bbox_number: 23,
-    // };
 
     const openModal = () => setModalIsOpen(true);
     const closeModal = () => setModalIsOpen(false);
@@ -76,7 +68,6 @@ const buttonStyle = {
     marginTop: '20px',
 };
 
-// Стили для модального окна и оверлея
 const modalStyles = {
     overlay: {
         backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -98,14 +89,12 @@ const modalStyles = {
     },
 };
 
-// Стили для заголовка модального окна
 const headerStyle = {
     color: '#ffffff',
     marginBottom: '10px',
     textAlign: 'center',
 };
 
-// Стили для таблицы
 const tableStyle = {
     width: '100%',
     borderCollapse: 'collapse',
@@ -115,7 +104,7 @@ const tableStyle = {
 
 // Стили для ячеек таблицы
 const cellStyle = {
-    padding: '2px 16px', // Увеличиваем отступы внутри ячеек для большего расстояния между столбцами
+    padding: '2px 16px',
 };
 
 export default StatsContainer;
