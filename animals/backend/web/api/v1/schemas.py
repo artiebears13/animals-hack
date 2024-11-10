@@ -102,3 +102,7 @@ class SizeThreshold(BaseModel):
 #     images_times: List[FileImageResponse] = Form(..., ),
 #     confidence_level: float = Field(default=0.95, description="Уровень уверенности предсказания", ge=0, le=1),
 #     size_threshold: SizeThreshold
+
+class PdfRequestBody:
+    uid: str
+    confidence_level: float

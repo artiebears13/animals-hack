@@ -107,22 +107,30 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
             return JSONResponse({}, status_code=200)
     logger.info(f"{jobs_images=}")
     [logger.info(f"{job=}") for job in jobs_images]
+
+    def form_payload_borders(current_job):
+        payload_borders = []
+        job_idx = hash(current_job.image.image_path)
+        job_borders = current_job.image.border
+        job_object_cls = current_job.image.object_class
+        for i in range(len(job_borders)):
+            current_border = {}
+            current_border["id"] = job_idx
+            current_border["object_class"] = job_object_cls[i]
+            current_border["left_up_corner"] = {"x": job_borders[i][0], "y": job_borders[i][1]}
+            current_border["width"] = job_borders[i][2]
+            current_border["height"] = job_borders[i][3]
+            payload_borders.append(current_border)
+
+        return payload_borders
+
+
+
     result = {
-        # "result": [{"status": job.status, "image_id": job.image_id, "border": job.image.border,
-        # "filename": job.image.image_path} for job in jobs_images]}
         "error_message": "",
         "images": [{"filename": str(job.image.image_path).split("/")[-1].split("_hash_")[-1],
                     "created_at": f"{job.image.datetime}", "camera": job.image.camera,
-                    # "result": [{"filename": job.image.image_path, "created_at": job.image.datetime, "camera": job.image.camera,
-                    "border":
-                        [{"id": hash(job.image.image_path),
-                          "animal_name": "animal",
-                          "object_class": job.image.object_class,
-                          "left_up_corner": {"x": job.image.border[0], "y": job.image.border[1]},
-                          "width": job.image.border[2],
-                          "height": job.image.border[3]
-                          }
-                         ]
+                    "border": form_payload_borders(job)
 
                     } for job in jobs_images],
         "stats": get_stats(jobs_images)
@@ -132,8 +140,9 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
 
 
 @router.post('/get_result_report')
-async def get_result(body: ResultRequest, session: AsyncSession = Depends(get_db), ):
+async def get_result(body: PdfRequestBody, session: AsyncSession = Depends(get_db), ):
     uid = body.uid
+    conf_lvl = body.confidence_level
 
     jobs_images = (await session.scalars(
         select(JobsImages).
@@ -145,21 +154,34 @@ async def get_result(body: ResultRequest, session: AsyncSession = Depends(get_db
         res = ""
         for i, cord in enumerate(bbox):
             if i == len(bbox) - 1:
-                res += str(cord)
+                res += str(int(cord))
             else:
-                res += str(cord) + ","
+                res += str(int(cord)) + ","
         return res
 
+    def convert_class_obj(class_obg: int):
+        if class_obg >= conf_lvl:
+            return 1
+        else:
+            return 0
+
     filenames = [str(job.image.image_path).split("/")[-1].split("_hash_")[-1] for job in jobs_images]
-    borders = [reformat_bbox(job.image.border) for job in jobs_images]
+    borders = [job.image.border for job in jobs_images]
     obj_class = [job.image.object_class for job in jobs_images]
     logger.info(borders)
     # взять из бд data[[Name	Bbox	Class]]
     data = pd.DataFrame({
-        "Name": filenames,
-        "Bbox": borders,
-        "Class": obj_class
+        "Name": [],
+        "Bbox": [],
+        "Class": [],
     })
+    for i, filename in enumerate(filenames):
+        for border in borders[i]:
+            data = pd.concat([data, pd.DataFrame({
+                "Name": filenames[i],
+                "Bbox": reformat_bbox(border),
+                "Class": convert_class_obj(obj_class[i]),
+            })])
 
     logger.info(data)
     pdf = ImageReportPDF(f"/data/{uid}_report.pdf", data)
