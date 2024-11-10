@@ -103,6 +103,6 @@ class SizeThreshold(BaseModel):
 #     confidence_level: float = Field(default=0.95, description="Уровень уверенности предсказания", ge=0, le=1),
 #     size_threshold: SizeThreshold
 
-class PdfRequestBody:
+class PdfRequestBody(BaseModel):
     uid: str
     confidence_level: float
