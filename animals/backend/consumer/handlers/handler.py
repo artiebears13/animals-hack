@@ -11,13 +11,17 @@ from web.storage.db import async_session
 from PIL import Image
 
 async def process_images(message: JobMessage) -> None:
+    # Собираем данные с сообщения
     image_pathes = message["body"]["data"]["filenames"]
     datetimes = message["body"]["data"]["datetimes"]
     cameras = message["body"]["data"]["cameras"]
     confidence_lvl = message["body"]["data"]["confidence_lvl"]
     image_ids = []
 
+    # Начинаем сессию с бд
     async with async_session() as session:
+
+        # Добавляем записи о картинках в бд
         image_ids = (await session.scalars(
             insert(Images).
             values([
@@ -29,6 +33,7 @@ async def process_images(message: JobMessage) -> None:
 
         await session.commit()
 
+        # Создаем запись о задаче в связывающей таблице
         await session.execute(insert(JobsImages).values([
             {"job_id": message["uid"], "image_id": image_id, "status": False}
             for image_id in image_ids
@@ -36,77 +41,30 @@ async def process_images(message: JobMessage) -> None:
 
         await session.commit()
 
-        #######################
-        # do smth with pictures here
-        #######################
-
         for index, image_id in enumerate(image_ids):
-            logger.info(f"11111111")
+            # отправка запроса на тритон сервер
             orders = call_triton(os.path.join('/data/raw', image_pathes[index]))
-            logger.info(f"22222222")
 
-            # logger.info(f"{orders=}")
+            # постпроцессинг
             for order in orders:
-                # logger.info(f"{order=}")
                 left, top, right, bottom = order["xyxy"]
                 order["xyxy"] = [left, top, right - left, bottom - top]
 
                 logger.info(f'{order["xyxy"]}, {order["conf"]}')
 
+            # Обновляем статус задачи
             await session.execute(
                 update(JobsImages).
                 where(JobsImages.job_id == message["uid"], JobsImages.image_id == image_id).
                 values(status=True)
             )
-
+            # Добавляем результаты работы в таблицу с картинками
             res_borders = [order["xyxy"] for order in orders]
             res_cls = [order["conf"] for order in orders]
-            # res = [
-            #         {"border": order["xyxy"], "object_class": order["conf"]}
-            #         {"border": [100, 200, 300, 100], "object_class": 0}
-                    # for order in orders
-                # ]
+
             await session.execute(
                 update(Images).
                 where(Images.id == image_id).
                 values(border=res_borders, object_class=res_cls)
             )
             await session.commit()
-
-
-            # logger.info(f"{image_pathes=}")
-            # logger.info(f"{image_pathes[index]=}")
-            # orders = await asyncio.to_thread(call_triton, image_pathes[index])
-
-
-            # await session.execute(
-            #     update(Images).
-            #     where(Images.id == image_id).
-            #     # values(border=, object_class=orders['cls'])
-            #     values([
-            #         # {"border": order["xyxy"], "object_class": order["conf"]}
-            #         {"border": [100, 200, 300, 100], "object_class": 0}
-            #         # for order in orders
-            #     ])
-            #
-            # )
-
-
-            # session.commit()
-        # await session.execute(
-        #     update(Images).
-        #     where(Images.id == example_id).
-        #     values(border=[1, 2, 3, 4], object_class=1)
-        # )
-        # await session.commit()
-        # job_row = await session.execute(select(Jobs).filter_by(uid=message["uid"]))
-        # job = job_row.scalar_one()
-        # session.refresh(job)
-        #
-        # await session.commit()
-        #
-        # row_check_obj = await session.execute(select(Jobs.is_processed).where(Jobs.uid == message["uid"]))
-        # row_check = row_check_obj.scalar_one()
-        # session.refresh(row_check)
-
-        # logger.info(f"Finish work with queued job; Processed: {row_check}")
