@@ -66,10 +66,10 @@ export const PhotoBox = ({ id, processedFile }) => {
 
                     // Применяем масштабирование к относительным координатам и размерам границы
                     const boxStyle = {
-                        width: `${borderItem.width * displayedWidth}px`,
-                        height: `${borderItem.height * displayedHeight}px`,
-                        top: `${borderItem.left_up_corner.y * displayedHeight}px`,
-                        left: `${borderItem.left_up_corner.x * displayedWidth}px`,
+                        width: `${borderItem.width * displayedWidth / originalWidth}px`,
+                        height: `${borderItem.height * displayedHeight / originalHeight}px`,
+                        top: `${borderItem.left_up_corner.y * displayedHeight / originalHeight}px`,
+                        left: `${borderItem.left_up_corner.x * displayedWidth / originalWidth}px`,
                         borderColor: `${borderItem.object_class === 1 ? "blue" : "red"}`
                     };
 
