@@ -124,8 +124,6 @@ async def get_result(body: UidResponse, session: AsyncSession = Depends(get_db),
 
         return payload_borders
 
-
-
     result = {
         "error_message": "",
         "images": [{"filename": str(job.image.image_path).split("/")[-1].split("_hash_")[-1],
@@ -176,12 +174,12 @@ async def get_result(body: PdfRequestBody, session: AsyncSession = Depends(get_d
         "Class": [],
     })
     for i, filename in enumerate(filenames):
-        for border in borders[i]:
+        for k, border in enumerate(borders[i]):
             data = pd.concat([data, pd.DataFrame({
                 "Name": filenames[i],
                 "Bbox": reformat_bbox(border),
-                "Class": convert_class_obj(obj_class[i]),
-            })])
+                "Class": convert_class_obj(obj_class[i][k]),
+            }, index=[i+k])], ignore_index=True)
 
     logger.info(data)
     pdf = ImageReportPDF(f"/data/{uid}_report.pdf", data)
