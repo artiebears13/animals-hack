@@ -143,6 +143,27 @@ docker-compose down
 </details>
 
 <details>
+<summary>Дополнительные технические утилиты</summary>
+ 
+- localhost как пример адреса 
+
+Swagger:
+```bash
+http://localhost:8001/swagger
+```
+
+Сбор метрик:
+```bash
+http://localhost:8081
+```
+
+Менеджер контейнеров Portainer:
+```bash
+https://localhost:9443
+```
+</details>
+
+<details>
   <summary>Структура проекта</summary>
 
 ```linux
