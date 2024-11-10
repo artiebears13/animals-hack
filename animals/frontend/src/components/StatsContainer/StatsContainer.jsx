@@ -25,29 +25,29 @@ export const StatsContainer = ({buttonClassName}) => {
                 <h2 style={headerStyle}>Статистика загрузки файлов</h2>
                 <table style={tableStyle}>
                     <tbody>
-                    <tr>
-                        <td style={cellStyle}>Всего загружено файлов:</td>
-                        <td style={cellStyle}>{stats.total_files_upload}</td>
+                    <tr style={trStyle}>
+                        <td style={cellNameStyle}>Всего загружено файлов:</td>
+                        <td style={cellDataStyle}>{stats.total_files_uploaded}</td>
                     </tr>
-                    <tr>
-                        <td style={cellStyle}>Файлов с классом 1:</td>
-                        <td style={cellStyle}>{stats.total_class1_files}</td>
+                    <tr style={trStyle}>
+                        <td style={cellNameStyle}>Файлов с классом 1:</td>
+                        <td style={cellDataStyle}>{stats.total_class1_files}</td>
                     </tr>
-                    <tr>
-                        <td style={cellStyle}>Файлов с классом 0:</td>
-                        <td style={cellStyle}>{stats.total_class0_files}</td>
+                    <tr style={trStyle}>
+                        <td style={cellNameStyle}>Файлов с классом 0:</td>
+                        <td style={cellDataStyle}>{stats.total_class0_files}</td>
                     </tr>
-                    <tr>
-                        <td style={cellStyle}>Файлы без объектов:</td>
-                        <td style={cellStyle}>{stats.total_files_without_objects}</td>
+                    <tr style={trStyle}>
+                        <td style={cellNameStyle}>Файлы без объектов:</td>
+                        <td style={cellDataStyle}>{stats.total_files_without_objects}</td>
                     </tr>
-                    <tr>
-                        <td style={cellStyle}>Среднее количество животных на фото:</td>
-                        <td style={cellStyle}>{stats.average_animals_per_photo}</td>
+                    <tr style={trStyle}>
+                        <td style={cellNameStyle}>Среднее количество животных на фото:</td>
+                        <td style={cellDataStyle}>{stats.average_animals_per_photo}</td>
                     </tr>
-                    <tr>
-                        <td style={cellStyle}>Общее количество боксов:</td>
-                        <td style={cellStyle}>{stats.total_bbox_number}</td>
+                    <tr style={trStyle}>
+                        <td style={cellNameStyle}>Общее количество боксов:</td>
+                        <td style={cellDataStyle}>{stats.total_bbox_number}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -103,8 +103,17 @@ const tableStyle = {
 };
 
 // Стили для ячеек таблицы
-const cellStyle = {
+const cellDataStyle = {
     padding: '2px 16px',
+    textAlign: 'center'
 };
+
+const cellNameStyle = {
+    padding: '2px 16px'
+}
+
+const trStyle ={
+    borderBottom: "1px solid #ddd",
+}
 
 export default StatsContainer;

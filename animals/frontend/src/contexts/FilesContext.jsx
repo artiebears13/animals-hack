@@ -22,6 +22,7 @@ export const FilesProvider = ({ children }) => {
     const [getResponse, setGetResponse] = useState(false);
     const [jobId, setJobId] = useState("");
     const [stats, setStats] = useState({});
+    const [totalFilesNumber, setTotalFilesNumber] = useState(0);
 
     const setUploadedFiles = useCallback((files) => {
         setFiles(files);
@@ -34,7 +35,11 @@ export const FilesProvider = ({ children }) => {
 
     useEffect(() => {
         recalculateClass();
-    }, [confidenceLevel]);
+    }, [confidenceLevel, setConfidenceLevel]);
+
+    useEffect(() => {
+        recalculateStats();
+    }, [confidenceLevel, setConfidenceLevel]);
 
 
 
@@ -46,6 +51,8 @@ export const FilesProvider = ({ children }) => {
         setError(null);
         setShowToast(false);
         setResponseMessage('');
+        console.log({files});
+        setTotalFilesNumber(files.length);
 
 
         try {
@@ -115,13 +122,50 @@ export const FilesProvider = ({ children }) => {
         return formData;
     };
 
+    const getTotalClass1Number = ()=>{
+        let total = 0;
+        processedFiles.forEach((item, index) => {
+            item.border.forEach((item2, idx) => {
+                if (item2.object_class > confidenceLevel){
+                    total += 1;
+                }
+            })
+        })
+        return total;
+    }
+    const getTotalClass2Number = ()=>{
+        let total = 0;
+        processedFiles.forEach((item, index) => {
+            item.border.forEach((item2, idx) => {
+                if (item2.object_class <= confidenceLevel){
+                    total += 1;
+                }
+            })
+        })
+        return total;
+    }
+
+    const recalculateStats = () => {
+        const total_class1_files = getTotalClass1Number();
+        const total_class2_files = getTotalClass2Number();
+        const statsObj = {
+            total_files_uploaded: totalFilesNumber,
+            total_class1_files,
+            total_class2_files,
+            total_files_without_objects: processedFiles.length - totalFilesNumber,
+            average_animals_per_photo: (total_class1_files + total_class2_files) / processedFiles.length,
+            total_bbox_number: total_class1_files + total_class2_files
+        }
+        setStats(statsObj);
+    }
+
     const recalculateClass = () => {
         setProcessedFiles((prev) => {
             return prev.map(image => {
                 const updatedBorders = image.border.map(borderObject => ({
                     ...borderObject,
-                    animal_name: borderObject.object_class > confidenceLevel ? "качественное" : "вспомагательное", // меняем animal_name
-                    object_class: borderObject.object_class > confidenceLevel ? 1 : 0, // меняем animal_name
+                    animal_name: borderObject.object_class > confidenceLevel ? "Основное" : "Вспомогательное", // меняем animal_name
+                    // object_class: borderObject.object_class > confidenceLevel ? 1 : 0, // меняем animal_name
                 }));
 
                 return {
@@ -141,7 +185,7 @@ export const FilesProvider = ({ children }) => {
 
                 const updatedBorders = image.border.map(borderObject => ({
                     ...borderObject,
-                    animal_name: borderObject.object_class === 1 ? "качественное" : "вспомагательное", // меняем animal_name
+                    animal_name: borderObject.object_class === 1 ? "Основное" : "Вспомогательное", // меняем animal_name
                 }));
 
                 return {

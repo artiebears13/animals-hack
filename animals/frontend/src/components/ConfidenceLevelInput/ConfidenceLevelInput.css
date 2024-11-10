@@ -1,3 +1,8 @@
+.confidence-level-container{
+    width: 80%;
+    margin:auto;
+}
+
 .confidence-level-controls {
     display: flex;
     align-items: center;
