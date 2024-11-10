@@ -1,6 +1,6 @@
 // src/api/api.js
 
-import { uploadFileToServer as mockUploadFile, getFilesFromServer as mockGetFiles } from '../mocks/mocks';
+// import { uploadFileToServer as mockUploadFile, getFilesFromServer as mockGetFiles } from '../mocks/mocks';
 
 // Экспортируем мок-функции вместо реальных API-запросов
 // export const uploadFileToServer = mockUploadFile;
@@ -46,13 +46,13 @@ export const downloadFilesFromServer = async (uid) => {
 
 
 
-export const getPdfFile = async (uid) => {
+export const getPdfFile = async (uid, confidenceLevel) => {
     const file = await fetch('/service/api/v1/get_result_report', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ uid }),
+        body: JSON.stringify({ uid, confidence_level: confidenceLevel }),
     });
 
     if (file.ok) {

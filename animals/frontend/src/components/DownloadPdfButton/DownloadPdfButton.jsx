@@ -4,12 +4,12 @@ import {getPdfFile} from "../../api/api";
 import './DownloadPdfButton.css'
 import DownloadIcon from '@mui/icons-material/Download';
 export const DownloadPdfButton = () => {
-    const { jobId, setError } = useContext(FilesContext);
+    const { jobId, setError, confidenceLevel } = useContext(FilesContext);
     const [clicked, setClicked] = useState(false);
     const handleClick = async () => {
         setClicked(true);
         try {
-            await getPdfFile(jobId);
+            await getPdfFile(jobId, confidenceLevel);
         }
         catch (e){
             console.error(e);

@@ -6,10 +6,11 @@ import {useNavigate} from "react-router-dom";
 import {DownloadPdfButton} from "../DownloadPdfButton/DownloadPdfButton";
 import ServerErrorToast from "../serverErrorToast/ServerErrorToast";
 import {StatsContainer} from "../StatsContainer/StatsContainer";
+import {ConfidenceLevelInput} from "../ConfidenceLevelInput/ConfidenceLevelInput";
 
 export const PhotoGallery = () => {
     const navigate = useNavigate();
-    const {processedFiles, error} = useContext(FilesContext);
+    const {processedFiles, error, confidenceLevel} = useContext(FilesContext);
 
     // Состояния сортировки и фильтрации
     const [sortOption, setSortOption] = useState('name-asc');
@@ -142,6 +143,7 @@ export const PhotoGallery = () => {
             <DownloadPdfButton />
             </div>
             <div className="photo-gallery">
+                <ConfidenceLevelInput />
                 <div className="controls">
                     <StatsContainer buttonClassName={"btn class-select sort-button"}/>
 

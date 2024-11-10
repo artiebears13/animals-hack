@@ -1,7 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import {useEffect, useState, useRef, useContext} from "react";
 import "./PhotoBox.css";
+import {FilesContext} from "../../contexts/FilesContext";
 
 export const PhotoBox = ({ id, processedFile }) => {
+    const {confidenceLevel} = useContext(FilesContext);
     const file = processedFile.file;
     const [preview, setPreview] = useState("");
     const [originalWidth, setOriginalWidth] = useState(0);
@@ -67,11 +69,11 @@ export const PhotoBox = ({ id, processedFile }) => {
                         height: `${borderItem.height * displayedHeight / originalHeight}px`,
                         top: `${borderItem.left_up_corner.y * displayedHeight / originalHeight}px`,
                         left: `${borderItem.left_up_corner.x * displayedWidth / originalWidth}px`,
-                        borderColor: `${borderItem.object_class === 1 ? "blue" : "red"}`
+                        borderColor: `${borderItem.object_class > confidenceLevel ? "blue" : "red"}`
                     };
 
                     const animalNameStyle = {
-                        backgroundColor: `${borderItem.object_class === 1 ? "blue" : "red"}`,
+                        backgroundColor: `${borderItem.object_class > confidenceLevel ? "blue" : "red"}`,
                     };
 
                     return (

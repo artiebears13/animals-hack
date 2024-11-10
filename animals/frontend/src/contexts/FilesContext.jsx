@@ -1,6 +1,6 @@
 // src/contexts/FilesContext.js
 
-import React, {createContext, useCallback, useState} from 'react';
+import React, {createContext, useCallback, useEffect, useState} from 'react';
 import { uploadFileToServer, downloadFilesFromServer } from '../api/api';
 
 export const FilesContext = createContext();
@@ -31,6 +31,12 @@ export const FilesProvider = ({ children }) => {
         const res = await downloadFilesFromServer(uid);
         return res;
     }
+
+    useEffect(() => {
+        recalculateClass();
+    }, [confidenceLevel]);
+
+
 
     /**
      * Функция для загрузки файла.
@@ -104,10 +110,27 @@ export const FilesProvider = ({ children }) => {
             const createdAt = new Date(file.file.lastModified);
             formData.append(`created_at`, createdAt.toISOString());
         });
-        formData.append('confidence_level', confidenceLevel);
         formData.append('size_threshold', JSON.stringify(sizeThreshold));
 
         return formData;
+    };
+
+    const recalculateClass = () => {
+        setProcessedFiles((prev) => {
+            return prev.map(image => {
+                const updatedBorders = image.border.map(borderObject => ({
+                    ...borderObject,
+                    animal_name: borderObject.object_class > confidenceLevel ? "качественное" : "вспомагательное", // меняем animal_name
+                    object_class: borderObject.object_class > confidenceLevel ? 1 : 0, // меняем animal_name
+                }));
+
+                return {
+                    ...image,
+                    border: updatedBorders,
+                };
+            });
+        });
+
     };
 
 
